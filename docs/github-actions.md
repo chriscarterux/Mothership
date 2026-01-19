@@ -1,11 +1,11 @@
-# Mothership GitHub Action
+# Mothership Core GitHub Action
 
-Use Mothership's AI agents directly in your GitHub workflows.
+Use Mothership Core's AI agents directly in your GitHub workflows.
 
 ## Quick Start
 
 ```yaml
-- uses: chriscarterux/Mothership@main
+- uses: chriscarterux/Mothership---Core@main
   with:
     mode: build
 ```
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chriscarterux/Mothership@main
+      - uses: chriscarterux/Mothership---Core@main
         with:
           mode: build
           max-iterations: 20
@@ -60,7 +60,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chriscarterux/Mothership@main
+      - uses: chriscarterux/Mothership---Core@main
         with:
           mode: test
           max-iterations: 5
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chriscarterux/Mothership@main
+      - uses: chriscarterux/Mothership---Core@main
         with:
           mode: review
 ```
@@ -92,5 +92,5 @@ Set these in your repository secrets or workflow:
 ## Notes
 
 - The action auto-downloads `mothership.sh` if not present in your repo
-- Use `ai-tool: auto` to let Mothership detect available AI tools
+- Use `ai-tool: auto` to let Mothership Core detect available AI tools
 - Increase `max-iterations` for complex features

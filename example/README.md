@@ -1,6 +1,6 @@
 # Example: Camino Journaling App
 
-This example shows Mothership building a feature for a journaling/personal development app.
+This example shows Mothership Core building a feature for a journaling/personal development app.
 
 ## The Project
 

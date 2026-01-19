@@ -1,6 +1,6 @@
-# Mothership
+# Mothership Core
 
-**A loop that plans, builds, tests, and reviews.**
+**The autonomous loop that plans, builds, tests, and reviews.**
 
 ```
 ./mothership.sh plan "user authentication"
@@ -11,7 +11,7 @@
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh | bash
 
 # Verify setup
 ./mothership.sh doctor
@@ -22,7 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/insta
 
 ## What It Does
 
-Mothership wraps any AI CLI tool (claude, amp, cursor) in a loop that:
+Mothership Core wraps any AI CLI tool (claude, amp, cursor) in a loop that:
 
 1. **Plans** - Reads your docs, creates stories in Linear or local JSON
 2. **Builds** - Implements one story per iteration, commits, continues
@@ -46,7 +46,7 @@ $ ./mothership.sh benchmark
   Estimated cost/run: $0.003 (Claude Sonnet)
 ```
 
-See [examples/todo-app/METRICS.md](./examples/todo-app/METRICS.md) for a real project built by Mothership.
+See [examples/todo-app/METRICS.md](./examples/todo-app/METRICS.md) for a real project built with Mothership Core.
 
 ## Commands
 
@@ -98,9 +98,9 @@ See [adapters/state/linear.md](./adapters/state/linear.md) for setup.
 
 ## Compared to Ralph
 
-[Ralph](https://github.com/snarktank/ralph) is a loop that builds. Mothership is a loop that plans, builds, tests, and reviews.
+[Ralph](https://github.com/snarktank/ralph) is a loop that builds. Mothership Core is a loop that plans, builds, tests, and reviews.
 
-| | Ralph | Mothership |
+| | Ralph | Mothership Core |
 |---|---|---|
 | Core loop | Yes | Yes |
 | Fresh context/iteration | Yes | Yes |
@@ -110,7 +110,7 @@ See [adapters/state/linear.md](./adapters/state/linear.md) for setup.
 | Token benchmark cmd | No | Yes |
 | Verify with `./mothership.sh benchmark` | - | Yes |
 
-If you just need a build loop, use Ralph. If you want the full workflow, use Mothership.
+If you just need a build loop, use Ralph. If you want the full workflow, use Mothership Core.
 
 ## Credits
 

@@ -1,6 +1,6 @@
-# Todo App - Built by Mothership
+# Todo App - Built by Mothership Core
 
-A complete todo application built entirely by Mothership agents.
+A complete todo application built entirely by Mothership Core agents.
 
 ## Results
 
@@ -53,10 +53,10 @@ TOTAL PER RUN                   1,086 tokens
 | Approach | Time | Cost |
 |----------|------|------|
 | Manual development | ~2-4 hours | $0 (your time) |
-| Mothership | ~8 minutes | $0.05 |
+| Mothership Core | ~8 minutes | $0.05 |
 | ChatGPT (copy-paste) | ~30 mins | ~$0.02 |
 
-Mothership wins on **consistency**: same patterns, tested code, documented.
+Mothership Core wins on **consistency**: same patterns, tested code, documented.
 
 ## Run It Yourself
 

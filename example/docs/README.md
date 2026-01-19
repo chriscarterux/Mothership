@@ -1,6 +1,6 @@
 # Camino Documentation
 
-> Feature documentation for the Mothership example.
+> Feature documentation for the Mothership Core example.
 
 ## Features
 

@@ -1,11 +1,11 @@
 #!/bin/bash
-# Mothership Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/install.sh | bash
+# Mothership Core Core Installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh | bash
 
 set -e
 
 echo ""
-echo "Mothership Installer"
+echo "Mothership Core Installer"
 echo ""
 
 # Detect if we're in a git repo
@@ -30,9 +30,9 @@ esac
 mkdir -p .mothership
 
 # Download files
-BASE_URL="https://raw.githubusercontent.com/chriscarterux/Mothership/main"
+BASE_URL="https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main"
 
-echo "Downloading Mothership..."
+echo "Downloading Mothership Core..."
 curl -fsSL "$BASE_URL/mothership.md" -o .mothership/mothership.md
 
 if [ "$INSTALL_TYPE" == "full" ]; then
@@ -60,11 +60,11 @@ EOF
 if [ -f .gitignore ]; then
     if ! grep -q "progress.md" .gitignore; then
         echo "" >> .gitignore
-        echo "# Mothership" >> .gitignore
+        echo "# Mothership Core" >> .gitignore
         echo "progress.md" >> .gitignore
     fi
 else
-    echo "# Mothership" > .gitignore
+    echo "# Mothership Core" > .gitignore
     echo "progress.md" >> .gitignore
 fi
 

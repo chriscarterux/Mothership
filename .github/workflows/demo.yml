@@ -1,4 +1,4 @@
-name: Mothership Demo
+name: Mothership Core Demo
 on:
   workflow_dispatch:
     inputs:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: chriscarterux/Mothership@main
+      - uses: chriscarterux/Mothership---Core@main
         with:
           mode: build
           max-iterations: 20

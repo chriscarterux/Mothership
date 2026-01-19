@@ -1,5 +1,5 @@
 #!/bin/bash
-# Mothership Loop - Iterative build/test/plan automation
+# Mothership Core Loop - Iterative build/test/plan automation
 # Works with any AI CLI tool (claude, cursor, aider, openai, etc.)
 
 set -e
@@ -55,7 +55,7 @@ case "$MODE" in
     benchmark)
         echo ""
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-        echo -e "${BLUE}  🛸 Mothership Benchmark${NC}"
+        echo -e "${BLUE}  🛸 Mothership Core Benchmark${NC}"
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
         echo ""
 
@@ -95,7 +95,7 @@ case "$MODE" in
     doctor)
         echo ""
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-        echo -e "${BLUE}  🛸 Mothership Doctor${NC}"
+        echo -e "${BLUE}  🛸 Mothership Core Doctor${NC}"
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
         echo ""
 
@@ -173,7 +173,7 @@ case "$MODE" in
     trace)
         echo ""
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-        echo -e "${BLUE}  🛸 Mothership Trace${NC}"
+        echo -e "${BLUE}  🛸 Mothership Core Trace${NC}"
         echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
         echo ""
 
@@ -253,8 +253,8 @@ esac
 if [[ ! -d ".mothership" ]]; then
     error "No .mothership/ directory found
 
-To set up Mothership, run:
-  curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/install.sh | bash
+To set up Mothership Core, run:
+  curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh | bash
 
 Or manually create .mothership/ with mothership.md"
 fi
@@ -264,7 +264,7 @@ if [[ ! -f ".mothership/mothership.md" ]]; then
     error "No .mothership/mothership.md found
 
 Run the installer to set up:
-  curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/install.sh | bash"
+  curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh | bash"
 fi
 
 # Detect AI tool (set AI_TOOL env var or auto-detect)
@@ -333,7 +333,7 @@ esac
 # Header
 echo ""
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
-echo -e "${BLUE}  🛸 Mothership Loop${NC}"
+echo -e "${BLUE}  🛸 Mothership Core Loop${NC}"
 echo -e "${BLUE}═══════════════════════════════════════════════════════${NC}"
 echo ""
 echo -e "  Mode:       ${CYAN}$MODE${NC}"
@@ -377,7 +377,7 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
     # Check for completion signals (various formats)
     if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel)>($SIGNALS)<"; then
         echo ""
-        success "Mothership complete! Finished at iteration $i."
+        success "Mothership Core complete! Finished at iteration $i."
         echo "$(date '+%Y-%m-%d %H:%M:%S') - Completed at iteration $i" >> progress.md
         exit 0
     fi
@@ -385,7 +385,7 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
     # Also check for signal without tags (flexibility)
     if echo "$OUTPUT" | grep -qE "($SIGNALS)"; then
         echo ""
-        success "Mothership complete! Finished at iteration $i."
+        success "Mothership Core complete! Finished at iteration $i."
         echo "$(date '+%Y-%m-%d %H:%M:%S') - Completed at iteration $i" >> progress.md
         exit 0
     fi

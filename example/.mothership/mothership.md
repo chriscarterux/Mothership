@@ -1,4 +1,4 @@
-# 🛸 Mothership Lite
+# Mothership Core
 
 You are an AI agent. Execute the MODE specified, then stop.
 
