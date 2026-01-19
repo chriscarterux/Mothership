@@ -396,8 +396,8 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
         exit 0
     fi
     
-    # Check for blocked signal (verbose: BLOCKED, compressed: X:)
-    if echo "$OUTPUT" | grep -qE "BLOCKED|X:[^<]+"; then
+    # Check for blocked signal (must use proper tag format like other signals)
+    if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel)>(BLOCKED|X:[^<]+)</(mothership|vector|cortex|cipher|sentinel)>"; then
         echo ""
         warn "Agent reported BLOCKED. Check output above for details."
         echo "$(date '+%Y-%m-%d %H:%M:%S') - Blocked at iteration $i" >> .mothership/progress.md

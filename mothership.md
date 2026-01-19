@@ -170,6 +170,7 @@ All signals MUST use the `<mothership>SIGNAL</mothership>` format.
 | `NEEDS-WORK:[issues]` | Changes needed | Stop (review is one-shot) |
 | `STATUS-COMPLETE` | Status reported | Stop (status is one-shot) |
 | `ONBOARD-COMPLETE` | Codebase.md created | Stop (onboard is one-shot) |
+| `BLOCKED` | Agent is blocked | **Stop** and report |
 
 **Important:** Output `BUILT:[ID]` after completing each story. Only output `BUILD-COMPLETE` when there are no more "Ready" stories to build.
 
