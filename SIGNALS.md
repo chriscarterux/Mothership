@@ -1,48 +1,53 @@
 # Signal Reference
 
-Signals indicate agent completion status. Format: `<agent>SIGNAL:data</agent>`
+Signals indicate agent completion status. All signals MUST use the format: `<agent>SIGNAL</agent>`
 
 ## Core Agents
 
-| Agent | Signal | Meaning |
-|-------|--------|---------|
-| cipher | `PLANNED:N` | Planned N stories |
-| vector | `BUILT:ID` | Built story ID |
-| vector | `BUILD-COMPLETE` | No more stories to build |
-| vector | `BLOCKED:ID:R` | Blocked on ID, reason R |
-| cortex | `TESTED:ID` | Tested story ID |
-| cortex | `TEST-COMPLETE` | All stories tested |
-| sentinel | `APPROVED` | Code review passed |
-| sentinel | `NEEDS-WORK` | Changes required |
+| Agent | Signal | Meaning | Loop Action |
+|-------|--------|---------|-------------|
+| cipher | `PLANNED:N` | Planned N stories | Stop (one-shot) |
+| vector | `BUILT:ID` | Built story ID | **Continue** |
+| vector | `BUILD-COMPLETE` | No more stories to build | **Stop** |
+| vector | `BLOCKED:ID:R` | Blocked on ID, reason R | Stop |
+| cortex | `TESTED:ID` | Tested story ID | **Continue** |
+| cortex | `TEST-COMPLETE` | All stories tested | **Stop** |
+| sentinel | `APPROVED` | Code review passed | Stop (one-shot) |
+| sentinel | `NEEDS-WORK` | Changes required | Stop (one-shot) |
 
 ## Default Mode (Single File)
 
 When using the default `mothership.md`, signals use the `<mothership>` tag:
 
-| Signal | Meaning |
-|--------|---------|
-| `<mothership>PLANNED:N</mothership>` | Planned N stories |
-| `<mothership>BUILT:ID</mothership>` | Built story ID |
-| `<mothership>BUILD-COMPLETE</mothership>` | No more stories |
-| `<mothership>TESTED:ID</mothership>` | Tested story ID |
-| `<mothership>TEST-COMPLETE</mothership>` | All tested |
-| `<mothership>APPROVED</mothership>` | Review passed |
-| `<mothership>NEEDS-WORK</mothership>` | Changes needed |
+| Signal | Meaning | Loop Action |
+|--------|---------|-------------|
+| `<mothership>PLANNED:N</mothership>` | Planned N stories | Stop (one-shot) |
+| `<mothership>BUILT:ID</mothership>` | Built story ID | **Continue** to next story |
+| `<mothership>BUILD-COMPLETE</mothership>` | No more stories | **Stop** the loop |
+| `<mothership>TESTED:ID</mothership>` | Tested story ID | **Continue** to next story |
+| `<mothership>TEST-COMPLETE</mothership>` | All tested | **Stop** the loop |
+| `<mothership>APPROVED</mothership>` | Review passed | Stop (one-shot) |
+| `<mothership>NEEDS-WORK</mothership>` | Changes needed | Stop (one-shot) |
 
 ## Signal Detection
 
-The `mothership.sh` loop detects these signals to determine completion:
+The `mothership.sh` loop detects signals in the `<agent>SIGNAL</agent>` format:
 
 ```bash
-# Build mode completes on:
-BUILD-COMPLETE | COMPLETE | B:* | C
+# Build mode stops loop on:
+BUILD-COMPLETE
 
-# Test mode completes on:
-TEST-COMPLETE | COMPLETE | T:*
+# Test mode stops loop on:
+TEST-COMPLETE
 
-# Plan mode completes on:
-PLANNED | P:*
+# Plan mode stops loop on:
+PLANNED:[0-9]+ (one iteration max)
 
-# Review mode completes on:
-APPROVED | NEEDS-WORK | A | NW
+# Review mode stops loop on:
+APPROVED | NEEDS-WORK (one iteration max)
 ```
+
+**Important:**
+- `BUILT:ID` signals a story is complete but the loop **continues** to the next story
+- `BUILD-COMPLETE` signals there are no more stories, so the loop **stops**
+- Same pattern applies for `TESTED:ID` vs `TEST-COMPLETE`

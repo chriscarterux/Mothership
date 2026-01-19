@@ -177,15 +177,19 @@ After each mode completes, append to `.mothership/progress.md`:
 
 ## SIGNALS
 
-```
-<mothership>PLANNED:[count]</mothership>
-<mothership>BUILT:[ID]</mothership>
-<mothership>BUILD-COMPLETE</mothership>
-<mothership>TESTED:[ID]</mothership>
-<mothership>TEST-COMPLETE</mothership>
-<mothership>APPROVED</mothership>
-<mothership>NEEDS-WORK:[issues]</mothership>
-```
+All signals MUST use the `<mothership>SIGNAL</mothership>` format.
+
+| Signal | Meaning | Loop Action |
+|--------|---------|-------------|
+| `PLANNED:[count]` | Created [count] stories | Stop (plan is one-shot) |
+| `BUILT:[ID]` | Completed story [ID] | **Continue** to next story |
+| `BUILD-COMPLETE` | No more ready stories | **Stop** the loop |
+| `TESTED:[ID]` | Tested story [ID] | **Continue** to next story |
+| `TEST-COMPLETE` | No more stories to test | **Stop** the loop |
+| `APPROVED` | Review passed | Stop (review is one-shot) |
+| `NEEDS-WORK:[issues]` | Changes needed | Stop (review is one-shot) |
+
+**Important:** Output `BUILT:[ID]` after completing each story. Only output `BUILD-COMPLETE` when there are no more "Ready" stories to build.
 
 ---
 
