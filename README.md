@@ -219,6 +219,79 @@ Mothership keeps that simplicity and adds:
 
 ---
 
+## Linear Setup
+
+Connect Mothership to Linear to auto-create projects, milestones, and issues from your docs.
+
+### 1. Install & Authenticate
+```bash
+npm install -g @linear/cli
+linear auth
+```
+
+### 2. Configure
+Edit `.mothership/config.json`:
+```json
+{
+  "state": "linear",
+  "linear": {
+    "team": "ENG"
+  }
+}
+```
+Find your team key: `linear team list`
+
+### 3. Add Your Docs
+Put your PRD, spec, or requirements in `./docs/`:
+```
+docs/
+├── auth.md          # Feature requirements
+├── onboarding.md    # Another feature
+└── api-spec.md      # Technical spec
+```
+
+### 4. Run Plan
+```bash
+./mothership.sh plan "user authentication"
+```
+
+Cipher will:
+- Read your docs
+- Create a Linear **Project** for the feature
+- Create **Milestones** for each phase/section
+- Create **Issues** for each user story
+- Set all issues to "Ready"
+
+### Example
+
+**Input (`docs/auth.md`):**
+```markdown
+# User Authentication
+
+## Phase 1: Basic Login
+- User can log in with email/password
+- User can reset password via email
+
+## Phase 2: OAuth
+- User can log in with Google
+- User can log in with GitHub
+```
+
+**Output in Linear:**
+```
+Project: User Authentication
+├── Milestone: Phase 1 - Basic Login
+│   ├── Issue: User can log in with email/password
+│   └── Issue: User can reset password via email
+└── Milestone: Phase 2 - OAuth
+    ├── Issue: User can log in with Google
+    └── Issue: User can log in with GitHub
+```
+
+**[→ Full Linear Adapter Docs](./adapters/state/linear.md)**
+
+---
+
 ## Credits
 
 Built on ideas from:

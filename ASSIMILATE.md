@@ -73,6 +73,45 @@ Say "use defaults" to skip questions:
 
 ---
 
+## Linear Setup (Recommended for Teams)
+
+### 1. Install Linear CLI
+```bash
+npm install -g @linear/cli
+linear auth
+```
+
+### 2. Find Your Team Key
+```bash
+linear team list
+# Output: ENG - Engineering, DES - Design, etc.
+```
+
+### 3. Update Config
+```json
+{
+  "state": "linear",
+  "linear": {
+    "team": "ENG"
+  }
+}
+```
+
+### 4. Add Docs & Plan
+```bash
+# Put your PRD/spec in ./docs/
+./mothership.sh plan "user authentication"
+```
+
+**Cipher will create:**
+- **Project** → from feature name
+- **Milestones** → from H2 sections
+- **Issues** → from user stories/bullets
+
+See [adapters/state/linear.md](./adapters/state/linear.md) for full CLI reference.
+
+---
+
 ## After Setup
 
 ```bash
