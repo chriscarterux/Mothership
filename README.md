@@ -8,6 +8,26 @@
 
 ---
 
+## Quick Start: Assimilate
+
+Tell your AI:
+```
+Read https://raw.githubusercontent.com/chriscarterux/Mothership/main/ASSIMILATE.md and integrate Mothership into this project
+```
+
+The Mothership will:
+1. **Scan** your environment (language, existing tools, repo state)
+2. **Ask** only what it can't detect (state backend, AI tool, version)
+3. **Configure** customized setup for your project
+4. **Onboard** by learning your codebase patterns
+
+Supports:
+- **State backends:** Linear, Jira, GitHub Issues, Notion, Trello, local JSON
+- **AI tools:** Amp, Claude, Cursor, OpenAI, or any LLM
+- **Projects:** New repos or existing codebases
+
+---
+
 ## Choose Your Version
 
 | | [Lite](./lite/) | [Full](./full/) |
