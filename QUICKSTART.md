@@ -62,7 +62,7 @@ Sessions expire after 24 hours.
 Failed attempts are rate-limited.
 ```
 
-> 📡 See the Camino example in `docs/examples/` for reference.
+> 📡 Add your feature documentation to help the Oracle understand what to build.
 
 ---
 
