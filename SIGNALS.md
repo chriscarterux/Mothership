@@ -15,7 +15,7 @@ Signals indicate agent completion status. Format: `<agent>SIGNAL:data</agent>`
 | sentinel | `APPROVED` | Code review passed |
 | sentinel | `NEEDS-WORK` | Changes required |
 
-## Shard Mode (Single File)
+## Default Mode (Single File)
 
 When using the default `mothership.md`, signals use the `<mothership>` tag:
 

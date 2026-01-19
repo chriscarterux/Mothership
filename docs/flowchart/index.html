@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mothership - Xenotech Agent Demo</title>
+    <title>Mothership - Agent Demo</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -12,22 +12,13 @@
 
         :root {
             --bg: #050508;
-            --bg-subtle: #0a0a0f;
-            --bg-muted: #12121a;
             --bg-card: #0d0d14;
             --border: #1a1a2e;
-            --border-glow: #00d4ff33;
             --text: #f0f0f5;
             --text-muted: #8888a0;
             --accent: #00d4ff;
-            --accent-secondary: #7c3aed;
-            --accent-tertiary: #06ffa5;
             --success: #06ffa5;
             --gradient: linear-gradient(135deg, #00d4ff 0%, #7c3aed 50%, #06ffa5 100%);
-            --gradient-subtle: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(124, 58, 237, 0.1) 100%);
-            --glow-cyan: 0 0 30px rgba(0, 212, 255, 0.3);
-            --glow-purple: 0 0 30px rgba(124, 58, 237, 0.3);
-            --glow-green: 0 0 30px rgba(6, 255, 165, 0.3);
         }
 
         body {
@@ -37,80 +28,30 @@
             line-height: 1.6;
             min-height: 100vh;
             -webkit-font-smoothing: antialiased;
-            overflow-x: hidden;
         }
 
-        /* Grid Background */
-        .grid-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image:
-                linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .grid-bg::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(ellipse at 50% 0%, rgba(0, 212, 255, 0.08) 0%, transparent 50%),
-                        radial-gradient(ellipse at 80% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 40%),
-                        radial-gradient(ellipse at 20% 80%, rgba(6, 255, 165, 0.05) 0%, transparent 40%);
-        }
-
-        /* Header */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 32px;
             border-bottom: 1px solid var(--border);
-            position: relative;
-            z-index: 10;
-            background: rgba(5, 5, 8, 0.85);
-            backdrop-filter: blur(20px);
         }
 
         .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
             font-weight: 800;
-            font-size: 1.35rem;
+            font-size: 1.25rem;
             text-decoration: none;
             color: var(--text);
-            letter-spacing: -0.02em;
-        }
-
-        .logo-icon {
-            font-size: 1.75rem;
-            filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
-        }
-
-        .logo span:last-child {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .status {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             font-size: 0.85rem;
             color: var(--success);
-            font-weight: 500;
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: rgba(6, 255, 165, 0.1);
             border: 1px solid rgba(6, 255, 165, 0.2);
             border-radius: 100px;
@@ -122,41 +63,17 @@
             background: var(--success);
             border-radius: 50%;
             animation: pulse 2s infinite;
-            box-shadow: 0 0 10px var(--success);
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(0.9); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
-        @keyframes glow-pulse {
-            0%, 100% { box-shadow: var(--glow-cyan); }
-            50% { box-shadow: 0 0 50px rgba(0, 212, 255, 0.5), 0 0 80px rgba(124, 58, 237, 0.3); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        @keyframes terminal-blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }
-
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        /* Main */
         main {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 48px 32px;
-            position: relative;
-            z-index: 1;
         }
 
         .page-header {
@@ -165,45 +82,27 @@
         }
 
         .page-header h1 {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
-            margin-bottom: 12px;
-            letter-spacing: -0.02em;
+            margin-bottom: 8px;
         }
 
         .page-header h1 span {
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         .page-header p {
             color: var(--text-muted);
-            font-size: 1.1rem;
         }
 
-        /* Flowchart */
         .flowchart {
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 0;
+            gap: 16px;
             margin-bottom: 48px;
-            overflow-x: auto;
-            padding: 20px 0;
-            position: relative;
-        }
-
-        .flow-connector-line {
-            position: absolute;
-            top: 60px;
-            left: 15%;
-            right: 15%;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-secondary), var(--accent-tertiary));
-            opacity: 0.3;
-            z-index: 0;
+            flex-wrap: wrap;
         }
 
         .step {
@@ -211,148 +110,75 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            z-index: 1;
+            transition: transform 0.3s;
         }
 
         .step:hover {
-            transform: translateY(-8px);
-        }
-
-        .step.active {
-            animation: float 3s ease-in-out infinite;
+            transform: translateY(-4px);
         }
 
         .step.active .step-icon {
-            border-color: transparent;
-            box-shadow: 0 0 40px rgba(0, 212, 255, 0.5), 0 0 80px rgba(124, 58, 237, 0.3);
-        }
-
-        .step.active .step-icon::before {
-            opacity: 1;
+            border-color: var(--accent);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.4);
         }
 
         .step-icon {
-            width: 90px;
-            height: 90px;
+            width: 80px;
+            height: 80px;
             background: var(--bg-card);
             border: 2px solid var(--border);
-            border-radius: 24px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.25rem;
-            margin-bottom: 14px;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-        }
-
-        .step-icon::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            border-radius: 26px;
-            background: var(--gradient);
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.4s;
-        }
-
-        .step:hover .step-icon {
-            border-color: var(--accent);
-            box-shadow: var(--glow-cyan);
-            transform: scale(1.05);
-        }
-
-        .step:hover .step-icon::before {
-            opacity: 0.5;
+            font-size: 2rem;
+            margin-bottom: 12px;
+            transition: all 0.3s;
         }
 
         .step-label {
             font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .step-agent {
             font-size: 0.8rem;
             color: var(--accent);
-            font-weight: 500;
         }
 
         .connector {
-            width: 50px;
+            width: 40px;
             height: 2px;
-            background: linear-gradient(90deg, var(--border), var(--accent), var(--border));
-            position: relative;
-            margin: 0 -4px;
-            margin-bottom: 50px;
-            opacity: 0.5;
+            background: var(--border);
+            margin-top: 40px;
         }
 
-        .connector::after {
-            content: '';
-            position: absolute;
-            right: 0;
-            top: -4px;
-            border: solid var(--accent);
-            border-width: 0 2px 2px 0;
-            padding: 4px;
-            transform: rotate(-45deg);
-            opacity: 0.7;
-        }
-
-        /* Details Panel */
         .details-panel {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 24px;
+            border-radius: 16px;
             overflow: hidden;
-            transition: all 0.4s;
-            position: relative;
-        }
-
-        .details-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient);
-            opacity: 0;
-            transition: opacity 0.4s;
         }
 
         .details-panel.active {
             border-color: var(--accent);
-            box-shadow: var(--glow-cyan);
-        }
-
-        .details-panel.active::before {
-            opacity: 1;
         }
 
         .panel-header {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 24px 28px;
+            gap: 12px;
+            padding: 20px 24px;
             border-bottom: 1px solid var(--border);
-            background: rgba(0, 212, 255, 0.02);
         }
 
         .panel-icon {
-            font-size: 1.75rem;
-            filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.5));
+            font-size: 1.5rem;
         }
 
         .panel-title {
             flex: 1;
             font-weight: 700;
-            font-size: 1.25rem;
-            letter-spacing: -0.01em;
         }
 
         .panel-title span {
@@ -360,228 +186,107 @@
         }
 
         .panel-close {
-            background: var(--bg-muted);
+            background: none;
             border: 1px solid var(--border);
             color: var(--text-muted);
-            font-size: 1.25rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             cursor: pointer;
-            line-height: 1;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s;
+            font-size: 1.25rem;
         }
 
         .panel-close:hover {
-            color: var(--text);
             border-color: var(--accent);
-            box-shadow: var(--glow-cyan);
+            color: var(--text);
         }
 
         .panel-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 28px;
-            padding: 28px;
+            gap: 24px;
+            padding: 24px;
         }
 
         .detail-section h3 {
             font-size: 0.7rem;
-            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.1em;
             color: var(--accent);
-            margin-bottom: 14px;
-            padding: 4px 10px;
-            background: rgba(0, 212, 255, 0.1);
-            border-radius: 100px;
-            display: inline-block;
+            margin-bottom: 12px;
         }
 
         .detail-section p {
-            font-size: 0.95rem;
-            line-height: 1.7;
+            font-size: 0.9rem;
             color: var(--text-muted);
         }
 
         .terminal {
             background: #000;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
+            border-radius: 8px;
+            padding: 16px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
             color: var(--success);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .terminal::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(6, 255, 165, 0.03) 0%, transparent 100%);
-            pointer-events: none;
-        }
-
-        .terminal::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: rgba(6, 255, 165, 0.3);
-            animation: scanline 3s linear infinite;
-            pointer-events: none;
-        }
-
-        .terminal-header {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .terminal-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border);
-        }
-
-        .terminal-dot.red { background: #ff5f56; }
-        .terminal-dot.yellow { background: #ffbd2e; }
-        .terminal-dot.green { background: #27ca40; }
-
-        .terminal code {
-            display: block;
-            white-space: pre-wrap;
-            position: relative;
-            z-index: 1;
-        }
-
-        .terminal-cursor {
-            display: inline-block;
-            width: 8px;
-            height: 14px;
-            background: var(--success);
-            margin-left: 4px;
-            animation: terminal-blink 1s infinite;
-            vertical-align: middle;
-        }
-
-        .time-display {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
         }
 
         .time-value {
-            font-size: 2.5rem;
+            font-size: 2rem;
             font-weight: 800;
             background: var(--gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1;
         }
 
         .time-unit {
             font-size: 0.85rem;
             color: var(--text-muted);
-            font-weight: 500;
+            margin-left: 8px;
         }
 
-        /* Footer */
         footer {
             text-align: center;
             padding: 32px;
             border-top: 1px solid var(--border);
             margin-top: 48px;
-            position: relative;
-            z-index: 1;
         }
 
         footer a {
             color: var(--text-muted);
             text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
 
         footer a:hover {
             color: var(--accent);
         }
 
-        footer a::before {
-            content: '';
-            display: inline-block;
-            width: 6px;
-            height: 6px;
-            border: solid var(--accent);
-            border-width: 0 0 2px 2px;
-            transform: rotate(45deg);
-            transition: transform 0.3s;
-        }
-
-        footer a:hover::before {
-            transform: translateX(-4px) rotate(45deg);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .flowchart {
-                flex-wrap: wrap;
-                gap: 16px;
-            }
-            .connector, .flow-connector-line { display: none; }
             .panel-content {
                 grid-template-columns: 1fr;
             }
-            .step-icon {
-                width: 72px;
-                height: 72px;
-                font-size: 1.75rem;
-            }
-            .page-header h1 {
-                font-size: 1.75rem;
+            .connector {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="grid-bg"></div>
-
     <header>
-        <a href="../" class="logo">
-            <span class="logo-icon">&#128760;</span>
-            <span>Mothership</span>
-        </a>
+        <a href="../" class="logo">Mothership</a>
         <div class="status">
             <span class="status-dot"></span>
-            Xenotech Online
+            Online
         </div>
     </header>
 
     <main>
         <div class="page-header">
             <h1>Agent <span>Command Flow</span></h1>
-            <p>Click any phase to explore the Xenotech workflow</p>
+            <p>Click any phase to explore the workflow</p>
         </div>
 
         <div class="flowchart">
-            <div class="flow-connector-line"></div>
             <div class="step" data-step="plan">
                 <div class="step-icon">&#128270;</div>
                 <div class="step-label">Plan</div>
@@ -605,12 +310,6 @@
                 <div class="step-label">Review</div>
                 <div class="step-agent">Sentinel</div>
             </div>
-            <div class="connector"></div>
-            <div class="step" data-step="ship">
-                <div class="step-icon">&#128640;</div>
-                <div class="step-label">Ship</div>
-                <div class="step-agent">Pulse</div>
-            </div>
         </div>
 
         <div class="details-panel" id="detailsPanel">
@@ -622,25 +321,18 @@
             <div class="panel-content">
                 <div class="detail-section">
                     <h3>Function</h3>
-                    <p id="agentFunction">Click on any phase above to see detailed information about that agent.</p>
+                    <p id="agentFunction">Click on any phase above to see details.</p>
                 </div>
                 <div class="detail-section">
                     <h3>Output Signal</h3>
                     <div class="terminal">
-                        <div class="terminal-header">
-                            <span class="terminal-dot red"></span>
-                            <span class="terminal-dot yellow"></span>
-                            <span class="terminal-dot green"></span>
-                        </div>
-                        <code id="outputTerminal">Awaiting signal...</code><span class="terminal-cursor"></span>
+                        <code id="outputTerminal">Awaiting signal...</code>
                     </div>
                 </div>
                 <div class="detail-section">
                     <h3>Duration</h3>
-                    <div class="time-display">
-                        <span class="time-value" id="timeValue">--</span>
-                        <span class="time-unit" id="timeUnit">minutes</span>
-                    </div>
+                    <span class="time-value" id="timeValue">--</span>
+                    <span class="time-unit" id="timeUnit">minutes</span>
                 </div>
             </div>
         </div>
@@ -655,41 +347,33 @@
             plan: {
                 icon: '&#128270;',
                 title: 'Plan <span>Cipher</span>',
-                function: 'Reads your documentation and creates structured stories with acceptance criteria and file hints. Zero manual PRD writing.',
-                signal: '<cipher>P:12</cipher>',
+                function: 'Reads your documentation and creates structured stories with acceptance criteria.',
+                signal: '<cipher>PLANNED:12</cipher>',
                 time: '2-5',
                 unit: 'minutes'
             },
             build: {
                 icon: '&#9889;',
                 title: 'Build <span>Vector</span>',
-                function: 'Implements one story at a time. Follows existing patterns, validates types, commits, and pushes. Loops until complete.',
-                signal: '<vector>B:STORY-123</vector>',
+                function: 'Implements one story at a time. Follows patterns, validates types, commits.',
+                signal: '<vector>BUILT:STORY-123</vector>',
                 time: '5-15',
                 unit: 'min/story'
             },
             test: {
                 icon: '&#128300;',
                 title: 'Test <span>Cortex</span>',
-                function: 'Writes chaos tests for edge cases: null inputs, timeouts, auth bypasses, malformed data. Finds bugs before users do.',
-                signal: '<cortex>T:STORY-123</cortex>',
+                function: 'Writes tests for edge cases: null inputs, errors, boundaries.',
+                signal: '<cortex>TESTED:STORY-123</cortex>',
                 time: '3-8',
                 unit: 'min/story'
             },
             review: {
                 icon: '&#128737;',
                 title: 'Review <span>Sentinel</span>',
-                function: 'Reviews all code before merge. Checks security, patterns, types, error handling. Creates fix tasks if needed. Never writes code.',
-                signal: '<sentinel>A</sentinel>',
+                function: 'Reviews code for security, patterns, and quality. Approves or requests fixes.',
+                signal: '<sentinel>APPROVED</sentinel>',
                 time: '1-3',
-                unit: 'minutes'
-            },
-            ship: {
-                icon: '&#128640;',
-                title: 'Ship <span>Pulse</span>',
-                function: 'Merges to main and deploys. Runs health checks with auto-rollback on failure. Updates status and cleans up branches.',
-                signal: '<pulse>D</pulse>',
-                time: '2-5',
                 unit: 'minutes'
             }
         };
