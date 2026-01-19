@@ -164,30 +164,30 @@ Features: governance, approvals, multi-service deployments, secret scanning, DOR
 
 | Agent | Role | Signal |
 |-------|------|--------|
-| **Cipher** | Planning - decodes requirements into stories | `<cipher>PLANNED:N</cipher>` |
-| **Vector** | Building - constructs code from stories | `<vector>BUILT:ID</vector>` |
-| **Cortex** | Testing - analyzes with chaos tests | `<cortex>TESTED:ID</cortex>` |
-| **Sentinel** | Review - guards code quality | `<sentinel>APPROVED</sentinel>` |
+| **Cipher** | Planning - decodes requirements into stories | `<cipher>P:N</cipher>` |
+| **Vector** | Building - constructs code from stories | `<vector>B:ID</vector>` |
+| **Cortex** | Testing - analyzes with chaos tests | `<cortex>T:ID</cortex>` |
+| **Sentinel** | Review - guards code quality | `<sentinel>A</sentinel>` |
 
 ### Optional Agents
 
 | Agent | Role | Signal |
 |-------|------|--------|
-| **Pulse** | Deployment | `<pulse>DEPLOYED</pulse>` |
-| **Nexus** | Prioritization | `<nexus>PRIORITIZED:N</nexus>` |
-| **Vigil** | Monitoring | `<vigil>HEALTHY</vigil>` |
-| **Archive** | Documentation | `<archive>DOCUMENTED:files</archive>` |
-| **Purge** | Tech debt cleanup | `<purge>CLEANED:summary</purge>` |
+| **Pulse** | Deployment | `<pulse>D</pulse>` |
+| **Nexus** | Prioritization | `<nexus>P:N</nexus>` |
+| **Vigil** | Monitoring | `<vigil>H</vigil>` |
+| **Archive** | Documentation | `<archive>D:F</archive>` |
+| **Purge** | Tech debt cleanup | `<purge>K:S</purge>` |
 
 ### Enterprise Agents (Matrix only)
 
 | Agent | Role | Signal |
 |-------|------|--------|
-| **Arbiter** | Conflict resolution | `<arbiter>RESOLVED:IDs</arbiter>` |
-| **Conductor** | Deployment orchestration | `<conductor>DEPLOYED:services</conductor>` |
-| **Coalition** | Multi-team coordination | `<coalition>COORDINATED:teams</coalition>` |
-| **Vault** | Secrets management | `<vault>SECURED:count</vault>` |
-| **Telemetry** | Analytics & metrics | `<telemetry>REPORT:summary</telemetry>` |
+| **Arbiter** | Conflict resolution | `<arbiter>R:IDs</arbiter>` |
+| **Conductor** | Deployment orchestration | `<conductor>D:S</conductor>` |
+| **Coalition** | Multi-team coordination | `<coalition>C:T</coalition>` |
+| **Vault** | Secrets management | `<vault>S:N</vault>` |
+| **Telemetry** | Analytics & metrics | `<telemetry>R:P</telemetry>` |
 
 ---
 
