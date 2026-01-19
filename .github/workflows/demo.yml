@@ -1,0 +1,16 @@
+name: Mothership Demo
+on:
+  workflow_dispatch:
+    inputs:
+      feature:
+        description: 'Feature to build'
+        required: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: chriscarterux/Mothership@main
+        with:
+          mode: build
+          max-iterations: 20

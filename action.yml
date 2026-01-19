@@ -1,0 +1,29 @@
+name: 'Mothership'
+description: 'AI agents that build your features'
+branding:
+  icon: 'zap'
+  color: 'purple'
+inputs:
+  mode:
+    description: 'Mode to run (plan, build, test, review)'
+    required: true
+    default: 'build'
+  max-iterations:
+    description: 'Maximum iterations for loop modes'
+    required: false
+    default: '10'
+  ai-tool:
+    description: 'AI CLI tool to use'
+    required: false
+    default: 'auto'
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        # Download mothership.sh if not present
+        if [ ! -f mothership.sh ]; then
+          curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership/main/mothership.sh -o mothership.sh
+          chmod +x mothership.sh
+        fi
+        AI_TOOL="${{ inputs.ai-tool }}" ./mothership.sh ${{ inputs.mode }} ${{ inputs.max-iterations }}
+      shell: bash

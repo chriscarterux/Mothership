@@ -52,6 +52,21 @@ Build the feature following existing patterns.
 
 **Incremental verification:** Run type-check after each file change.
 
+### 6b. Browser Verification (UI Stories)
+
+If acceptance criteria includes UI elements:
+
+1. Ensure dev server is running (`npm run dev` or equivalent)
+2. Navigate to the relevant route
+3. Verify UI elements exist (text, buttons, inputs, layout)
+4. If Playwright/Puppeteer available:
+   ```bash
+   npx playwright test [story-specific-test]
+   ```
+5. Note in commit message: "Browser verified at /route"
+
+**Skip if backend-only** (API routes, database, CLI, etc.)
+
 ### 7. Quality Gate
 Run all checks:
 ```bash

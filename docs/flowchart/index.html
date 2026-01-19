@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOTHERSHIP // Agent Command Flow</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="starfield" id="starfield"></div>
+    <div class="scan-line"></div>
+    
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">👽</span>
+            <span class="logo-text">MOTHERSHIP</span>
+        </div>
+        <div class="status-bar">
+            <span class="status-dot"></span>
+            <span>SYSTEMS ONLINE</span>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <h1 class="title">AGENT COMMAND FLOW</h1>
+        <p class="subtitle">// Sequential execution protocol for autonomous operations</p>
+
+        <div class="flowchart-container">
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+
+            <div class="flowchart">
+                <div class="step" data-step="assimilate">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">🛸</div>
+                        <div class="node-label">ASSIMILATE</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Scanner</span>
+                        <span class="agent-task">Config</span>
+                    </div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-pulse"></div>
+                </div>
+
+                <div class="step" data-step="plan">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">🔮</div>
+                        <div class="node-label">PLAN</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Oracle</span>
+                        <span class="agent-task">Stories</span>
+                    </div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-pulse"></div>
+                </div>
+
+                <div class="step" data-step="build">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">⚡</div>
+                        <div class="node-label">BUILD</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Drone</span>
+                        <span class="agent-task">Code</span>
+                    </div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-pulse"></div>
+                </div>
+
+                <div class="step" data-step="test">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">🔬</div>
+                        <div class="node-label">TEST</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Probe</span>
+                        <span class="agent-task">Tests</span>
+                    </div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-pulse"></div>
+                </div>
+
+                <div class="step" data-step="review">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">👁️</div>
+                        <div class="node-label">REVIEW</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Overseer</span>
+                        <span class="agent-task">Approve</span>
+                    </div>
+                </div>
+
+                <div class="connector">
+                    <div class="connector-line"></div>
+                    <div class="connector-pulse"></div>
+                </div>
+
+                <div class="step" data-step="ship">
+                    <div class="step-node">
+                        <div class="node-glow"></div>
+                        <div class="node-icon">🚀</div>
+                        <div class="node-label">SHIP</div>
+                    </div>
+                    <div class="step-agent">
+                        <span class="agent-name">Beacon</span>
+                        <span class="agent-task">Deploy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-panel" id="detailsPanel">
+            <div class="panel-header">
+                <span class="panel-icon" id="panelIcon">🛸</span>
+                <span class="panel-title" id="panelTitle">SELECT A PHASE</span>
+                <button class="panel-close" id="panelClose">×</button>
+            </div>
+            <div class="panel-content">
+                <div class="detail-section">
+                    <h3>// AGENT FUNCTION</h3>
+                    <p id="agentFunction">Click on any phase node to view detailed intelligence.</p>
+                </div>
+                <div class="detail-section">
+                    <h3>// OUTPUT SIGNALS</h3>
+                    <div class="output-terminal" id="outputTerminal">
+                        <code>AWAITING SELECTION...</code>
+                    </div>
+                </div>
+                <div class="detail-section">
+                    <h3>// TIME ESTIMATE</h3>
+                    <div class="time-display">
+                        <span class="time-value" id="timeValue">--:--</span>
+                        <span class="time-unit">CYCLES</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-text">MOTHERSHIP COMMAND v2.0 // ALL SYSTEMS NOMINAL</div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

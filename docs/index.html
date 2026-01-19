@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mothership - AI Agents That Build Your Features</title>
+    <meta name="description" content="Tell Mothership what to build. It plans, implements, tests, and reviews. Like having a dev team that never sleeps.">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a1a;
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 100%);
+        }
+
+        .ufo {
+            font-size: 80px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin: 20px 0;
+            background: linear-gradient(90deg, #00d4ff, #7b2fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 40px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #00d4ff, #7b2fff);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+        }
+
+        .install-section {
+            background: #111;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .install-code {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px 40px;
+            display: inline-block;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.1rem;
+            color: #00d4ff;
+        }
+
+        .features {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 50px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 30px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h3 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+
+        .comparison {
+            padding: 80px 20px;
+            background: #111;
+        }
+
+        .comparison h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        .comparison-table {
+            max-width: 800px;
+            margin: 0 auto;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #333;
+        }
+
+        .comparison-table th {
+            color: #00d4ff;
+        }
+
+        .check { color: #00ff88; }
+        .x { color: #ff4444; }
+
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        footer a {
+            color: #00d4ff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .tagline { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero">
+        <div class="ufo">🛸</div>
+        <h1>Mothership</h1>
+        <p class="tagline">AI agents that build your features</p>
+        <div class="cta-buttons">
+            <a href="https://github.com/chriscarterux/Mothership" class="btn btn-primary">⭐ Star on GitHub</a>
+            <a href="./flowchart/" class="btn btn-secondary">View Demo →</a>
+        </div>
+    </section>
+
+    <section class="install-section">
+        <h2>One-Line Install</h2>
+        <div class="install-code">
+            curl -fsSL https://mothership.dev/install.sh | bash
+        </div>
+        <p style="color: #666; margin-top: 20px;">Works with any AI tool: Claude, Cursor, GPT-4, and more</p>
+    </section>
+
+    <section class="features">
+        <h2>The Fleet</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔮</div>
+                <h3>Oracle</h3>
+                <p>Reads your docs and creates stories. No manual PRD writing needed.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <h3>Drone</h3>
+                <p>Implements one story at a time. Commits, pushes, updates status.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3>Probe</h3>
+                <p>Writes chaos tests. Finds edge cases. Exposes vulnerabilities.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">👁️</div>
+                <h3>Overseer</h3>
+                <p>Reviews code before merge. Checks security, performance, patterns.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="comparison">
+        <h2>Why Mothership?</h2>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Manual Dev</th>
+                    <th>Basic AI</th>
+                    <th>Mothership</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Auto-plans from docs</td>
+                    <td class="x">✗</td>
+                    <td class="x">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+                <tr>
+                    <td>Writes chaos tests</td>
+                    <td class="x">✗</td>
+                    <td class="x">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+                <tr>
+                    <td>Reviews before merge</td>
+                    <td class="check">✓</td>
+                    <td class="x">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+                <tr>
+                    <td>Works with any AI tool</td>
+                    <td>N/A</td>
+                    <td class="x">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+                <tr>
+                    <td>Loops until complete</td>
+                    <td class="x">✗</td>
+                    <td class="x">✗</td>
+                    <td class="check">✓</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <p>
+            <a href="https://github.com/chriscarterux/Mothership">GitHub</a> · 
+            <a href="./flowchart/">Interactive Demo</a> · 
+            <a href="https://github.com/chriscarterux/Mothership/blob/main/CREDITS.md">Credits</a>
+        </p>
+        <p style="margin-top: 20px;">"I come in peace. I leave with features." 🛸</p>
+    </footer>
+</body>
+</html>
