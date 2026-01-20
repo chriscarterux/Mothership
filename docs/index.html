@@ -3,29 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mothership Core - A Loop That Plans, Builds, Tests, and Reviews</title>
-    <meta name="description" content="Mothership Core wraps any AI CLI in a loop that plans, builds, tests, and reviews. Verify token usage with ./mothership.sh benchmark.">
+    <title>Mothership Core - Autonomous AI Development Loop</title>
+    <meta name="description" content="The autonomous loop that plans, builds, tests, and reviews. Fresh context each iteration. Verify token usage yourself.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         :root {
-            --bg: #09090b;
-            --bg-subtle: #0c0c0f;
-            --bg-card: rgba(24, 24, 27, 0.8);
-            --bg-card-hover: rgba(39, 39, 42, 0.8);
-            --border: rgba(63, 63, 70, 0.4);
-            --border-hover: rgba(113, 113, 122, 0.5);
-            --text: #fafafa;
-            --text-muted: #a1a1aa;
-            --accent: #3b82f6;
-            --accent-secondary: #8b5cf6;
-            --success: #22c55e;
-            --gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #06b6d4 100%);
-            --glow-accent: rgba(59, 130, 246, 0.5);
-            --glow-secondary: rgba(139, 92, 246, 0.5);
+            --bg: #04070d;
+            --bg-elevated: #0a0f18;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-light: rgba(255, 255, 255, 0.12);
+            --text: #d5dbe6;
+            --text-bright: #ffffff;
+            --text-muted: #6b7280;
+            --accent: #a6daff;
+            --accent-glow: rgba(166, 218, 255, 0.15);
+            --accent-subtle: rgba(166, 218, 255, 0.08);
+            --gradient-glow: radial-gradient(ellipse 50% 80% at 50% -20%, rgba(166, 218, 255, 0.12), transparent);
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -34,99 +41,120 @@
             color: var(--text);
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
 
-        .bg-grid {
+        .serif {
+            font-family: 'Instrument Serif', Georgia, serif;
+            font-style: italic;
+        }
+
+        /* Glow Background */
+        .glow-bg {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-            background-size: 64px 64px;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: var(--gradient-glow);
             pointer-events: none;
             z-index: 0;
         }
 
-        .bg-gradient {
+        .glow-orb {
             position: fixed;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-                        radial-gradient(circle at 70% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
-            animation: gradientMove 20s ease-in-out infinite;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
             pointer-events: none;
             z-index: 0;
         }
 
-        @keyframes gradientMove {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(5deg); }
-            66% { transform: translate(-20px, 20px) rotate(-5deg); }
+        .glow-orb-1 {
+            top: -200px;
+            left: 20%;
+            background: rgba(166, 218, 255, 0.15);
+            animation: float 20s ease-in-out infinite;
         }
 
+        .glow-orb-2 {
+            top: 40%;
+            right: -100px;
+            background: rgba(139, 92, 246, 0.1);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 20px); }
+        }
+
+        /* Container */
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0 40px;
             position: relative;
             z-index: 1;
         }
 
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        .fade-in-delay-1 { animation-delay: 0.1s; }
-        .fade-in-delay-2 { animation-delay: 0.2s; }
-        .fade-in-delay-3 { animation-delay: 0.3s; }
-        .fade-in-delay-4 { animation-delay: 0.4s; }
-
-        @keyframes fadeInUp {
-            to { opacity: 1; transform: translateY(0); }
+        @media (max-width: 810px) {
+            .container { padding: 0 20px; }
         }
 
+        /* Navigation */
         nav {
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            position: sticky;
+            position: fixed;
             top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
             z-index: 100;
-            background: rgba(9, 9, 11, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            background: rgba(4, 7, 13, 0.8);
+            border-bottom: 1px solid var(--border);
         }
 
-        .nav-content {
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            height: 100%;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
         }
 
         .logo {
-            font-weight: 700;
-            font-size: 1.1rem;
-            text-decoration: none;
-            color: var(--text);
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: opacity 0.2s;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--text-bright);
+            font-weight: 600;
+            font-size: 1rem;
         }
-        .logo:hover { opacity: 0.8; }
 
-        .logo-icon {
-            width: 28px; height: 28px;
-            background: var(--gradient);
-            border-radius: 8px;
+        .logo-mark {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent) 0%, rgba(139, 92, 246, 0.8) 100%);
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--bg);
         }
 
         .nav-links {
             display: flex;
+            align-items: center;
             gap: 8px;
             list-style: none;
         }
@@ -135,458 +163,531 @@
             color: var(--text-muted);
             text-decoration: none;
             font-size: 0.875rem;
+            font-weight: 500;
             padding: 8px 16px;
             border-radius: 8px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
         }
+
         .nav-links a:hover {
             color: var(--text);
             background: var(--bg-card);
         }
 
+        .nav-cta {
+            background: var(--text-bright) !important;
+            color: var(--bg) !important;
+            padding: 8px 20px !important;
+            border-radius: 36px !important;
+            font-weight: 600 !important;
+        }
+
+        .nav-cta:hover {
+            opacity: 0.9;
+            background: var(--text-bright) !important;
+        }
+
+        /* Hero */
         .hero {
-            padding: 120px 0 100px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
+            padding: 160px 0 120px;
             position: relative;
         }
 
-        .badge {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
+            padding: 8px 16px;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 100px;
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 24px;
-            backdrop-filter: blur(8px);
+            margin-bottom: 32px;
+            animation: fadeUp 0.8s ease-out;
         }
 
-        .badge-dot {
-            width: 6px; height: 6px;
-            background: var(--success);
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            background: #22c55e;
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
-            50% { opacity: 0.8; box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
-            margin-bottom: 20px;
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            font-weight: 600;
+            line-height: 1.05;
             letter-spacing: -0.03em;
-            line-height: 1.1;
+            color: var(--text-bright);
+            margin-bottom: 24px;
+            max-width: 900px;
+            animation: fadeUp 0.8s ease-out 0.1s both;
         }
 
-        .hero h1 span {
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .hero h1 .accent {
+            color: var(--accent);
         }
 
         .hero-subtitle {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             color: var(--text-muted);
-            max-width: 600px;
-            margin: 0 auto 40px;
+            max-width: 560px;
+            margin-bottom: 48px;
             line-height: 1.7;
+            animation: fadeUp 0.8s ease-out 0.2s both;
         }
 
-        .hero-code {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 28px;
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.9rem;
-            color: var(--text);
-            margin-bottom: 40px;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s;
-            cursor: pointer;
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .hero-code:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
-        }
-        .hero-code .prompt { color: var(--text-muted); }
-        .hero-code .cmd { color: var(--success); }
-        .hero-code .copy-icon {
-            color: var(--text-muted);
-            transition: color 0.2s;
-        }
-        .hero-code:hover .copy-icon { color: var(--text); }
 
-        .btn-group {
+        .hero-actions {
             display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+            animation: fadeUp 0.8s ease-out 0.3s both;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 12px 24px;
-            border-radius: 10px;
+            padding: 14px 28px;
+            border-radius: 36px;
             font-size: 0.9rem;
-            font-weight: 500;
+            font-weight: 600;
             text-decoration: none;
-            transition: all 0.2s;
-            border: none;
+            transition: all 0.2s ease;
             cursor: pointer;
+            border: none;
         }
+
         .btn-primary {
-            background: var(--text);
+            background: var(--text-bright);
             color: var(--bg);
         }
+
         .btn-primary:hover {
-            opacity: 0.9;
             transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 255, 255, 0.15);
         }
+
         .btn-secondary {
             background: transparent;
             color: var(--text);
-            border: 1px solid var(--border);
-        }
-        .btn-secondary:hover {
-            background: var(--bg-card);
-            border-color: var(--border-hover);
+            border: 1px solid var(--border-light);
         }
 
-        .flow-section { padding: 100px 0; }
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--border-light);
+        }
+
+        .hero-code {
+            margin-top: 64px;
+            padding: 20px 32px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--text);
+            animation: fadeUp 0.8s ease-out 0.4s both;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .hero-code:hover {
+            border-color: var(--border-light);
+            background: var(--bg-card-hover);
+        }
+
+        .hero-code .prompt { color: var(--text-muted); }
+        .hero-code .cmd { color: var(--accent); }
+
+        /* Section */
+        .section {
+            padding: 120px 0;
+            position: relative;
+        }
 
         .section-header {
             text-align: center;
-            margin-bottom: 64px;
+            margin-bottom: 80px;
         }
 
         .section-label {
-            font-size: 0.8rem;
-            font-weight: 500;
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.15em;
             color: var(--accent);
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
         .section-title {
-            font-size: clamp(1.75rem, 3vw, 2.5rem);
-            font-weight: 700;
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 600;
+            color: var(--text-bright);
             letter-spacing: -0.02em;
             margin-bottom: 16px;
         }
 
         .section-desc {
+            font-size: 1.125rem;
             color: var(--text-muted);
             max-width: 500px;
             margin: 0 auto;
         }
 
-        .flow-grid {
+        /* Workflow Grid */
+        .workflow-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
+            gap: 24px;
         }
 
-        .flow-step {
+        .workflow-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px 24px;
+            border-radius: 20px;
+            padding: 40px 28px;
             text-align: center;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
-        .flow-step::before {
+
+        .workflow-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
             background: linear-gradient(90deg, transparent, var(--accent), transparent);
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.4s ease;
         }
-        .flow-step:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-4px);
+
+        .workflow-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-light);
             background: var(--bg-card-hover);
         }
-        .flow-step:hover::before { opacity: 1; }
 
-        .flow-icon {
-            width: 56px; height: 56px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 14px;
+        .workflow-card:hover::before {
+            opacity: 1;
+        }
+
+        .workflow-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 24px;
+            background: var(--accent-subtle);
+            border: 1px solid rgba(166, 218, 255, 0.2);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            transition: all 0.3s;
+            transition: all 0.4s ease;
         }
-        .flow-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--text);
+
+        .workflow-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--accent);
         }
-        .flow-step:hover .flow-icon {
+
+        .workflow-card:hover .workflow-icon {
             transform: scale(1.1);
-            box-shadow: 0 0 30px var(--glow-accent);
+            box-shadow: 0 0 40px var(--accent-glow);
         }
 
-        .flow-step:nth-child(2) .flow-icon {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(6, 182, 212, 0.2));
-            border-color: rgba(34, 197, 94, 0.3);
+        .workflow-card:nth-child(2) .workflow-icon {
+            background: rgba(34, 197, 94, 0.08);
+            border-color: rgba(34, 197, 94, 0.2);
         }
-        .flow-step:nth-child(2):hover .flow-icon {
-            box-shadow: 0 0 30px rgba(34, 197, 94, 0.5);
-        }
-        .flow-step:nth-child(3) .flow-icon {
-            background: linear-gradient(135deg, rgba(249, 115, 22, 0.2), rgba(239, 68, 68, 0.2));
-            border-color: rgba(249, 115, 22, 0.3);
-        }
-        .flow-step:nth-child(3):hover .flow-icon {
-            box-shadow: 0 0 30px rgba(249, 115, 22, 0.5);
-        }
-        .flow-step:nth-child(4) .flow-icon {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
-            border-color: rgba(139, 92, 246, 0.3);
-        }
-        .flow-step:nth-child(4):hover .flow-icon {
-            box-shadow: 0 0 30px var(--glow-secondary);
-        }
+        .workflow-card:nth-child(2) .workflow-icon svg { stroke: #22c55e; }
+        .workflow-card:nth-child(2):hover .workflow-icon { box-shadow: 0 0 40px rgba(34, 197, 94, 0.2); }
 
-        .flow-number {
+        .workflow-card:nth-child(3) .workflow-icon {
+            background: rgba(249, 115, 22, 0.08);
+            border-color: rgba(249, 115, 22, 0.2);
+        }
+        .workflow-card:nth-child(3) .workflow-icon svg { stroke: #f97316; }
+        .workflow-card:nth-child(3):hover .workflow-icon { box-shadow: 0 0 40px rgba(249, 115, 22, 0.2); }
+
+        .workflow-card:nth-child(4) .workflow-icon {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+        .workflow-card:nth-child(4) .workflow-icon svg { stroke: #8b5cf6; }
+        .workflow-card:nth-child(4):hover .workflow-icon { box-shadow: 0 0 40px rgba(139, 92, 246, 0.2); }
+
+        .workflow-number {
             font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-muted);
             margin-bottom: 8px;
+            letter-spacing: 0.1em;
         }
-        .flow-label {
+
+        .workflow-title {
+            font-size: 1.25rem;
             font-weight: 600;
-            font-size: 1.1rem;
+            color: var(--text-bright);
             margin-bottom: 4px;
         }
-        .flow-agent {
-            font-size: 0.85rem;
+
+        .workflow-agent {
+            font-size: 0.875rem;
             color: var(--accent);
             font-weight: 500;
         }
 
-        .features-section { padding: 100px 0; }
-
+        /* Features */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
+            gap: 20px;
         }
 
         .feature-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 28px;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 32px;
+            transition: all 0.3s ease;
         }
+
         .feature-card:hover {
-            border-color: var(--border-hover);
-            transform: translateY(-2px);
+            border-color: var(--border-light);
+            transform: translateY(-4px);
         }
 
         .feature-icon {
-            width: 40px; height: 40px;
-            background: var(--bg-card-hover);
-            border-radius: 10px;
+            width: 48px;
+            height: 48px;
+            background: var(--bg-elevated);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
+
         .feature-icon svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             stroke: var(--text-muted);
         }
+
         .feature-card h3 {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
+            color: var(--text-bright);
             margin-bottom: 8px;
         }
+
         .feature-card p {
+            font-size: 0.9rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
             line-height: 1.6;
         }
 
-        .benchmark-section { padding: 100px 0; }
+        /* Benchmark */
+        .benchmark-section {
+            padding: 120px 0;
+        }
 
-        .benchmark-container {
+        .benchmark-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 48px;
-            backdrop-filter: blur(8px);
+            border-radius: 24px;
+            padding: 64px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 48px;
+            gap: 64px;
             align-items: center;
+        }
+
+        .benchmark-content .section-label {
+            margin-bottom: 16px;
         }
 
         .benchmark-content h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: var(--text-bright);
             margin-bottom: 16px;
             letter-spacing: -0.02em;
         }
+
         .benchmark-content p {
             color: var(--text-muted);
-            margin-bottom: 24px;
+            margin-bottom: 32px;
             line-height: 1.7;
         }
 
-        .token-stats {
+        .stats {
             display: flex;
-            gap: 32px;
+            gap: 48px;
         }
-        .stat { text-align: left; }
+
         .stat-value {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 700;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--accent);
             line-height: 1;
+            letter-spacing: -0.02em;
         }
+
         .stat-label {
             font-size: 0.8rem;
             color: var(--text-muted);
-            margin-top: 4px;
+            margin-top: 8px;
         }
 
-        .benchmark-terminal {
+        .terminal {
             background: #000;
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 16px;
             overflow: hidden;
-            font-family: 'JetBrains Mono', monospace;
         }
 
         .terminal-header {
-            background: rgba(255,255,255,0.05);
-            padding: 12px 16px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             gap: 8px;
-            border-bottom: 1px solid var(--border);
         }
 
         .terminal-dot {
-            width: 12px; height: 12px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background: #3f3f46;
+            background: #27272a;
         }
+
         .terminal-dot.red { background: #ef4444; }
         .terminal-dot.yellow { background: #eab308; }
         .terminal-dot.green { background: #22c55e; }
 
         .terminal-body {
-            padding: 20px;
-            font-size: 0.8rem;
-            line-height: 1.8;
+            padding: 24px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 2;
         }
 
         .terminal-line {
             opacity: 0;
-            animation: typeLine 0.3s ease-out forwards;
-        }
-        .terminal-line:nth-child(1) { animation-delay: 0.2s; }
-        .terminal-line:nth-child(2) { animation-delay: 0.4s; }
-        .terminal-line:nth-child(3) { animation-delay: 0.6s; }
-        .terminal-line:nth-child(4) { animation-delay: 0.8s; }
-        .terminal-line:nth-child(5) { animation-delay: 1s; }
-        .terminal-line:nth-child(6) { animation-delay: 1.2s; }
-        .terminal-line:nth-child(7) { animation-delay: 1.4s; }
-
-        @keyframes typeLine {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
+            animation: fadeIn 0.4s ease-out forwards;
         }
 
-        .terminal-prompt { color: var(--text-muted); }
-        .terminal-cmd { color: var(--success); }
-        .terminal-file { color: var(--text-muted); }
-        .terminal-tokens { color: var(--accent); }
-        .terminal-total { color: var(--success); font-weight: 600; }
-        .terminal-cost { color: #06b6d4; }
+        .terminal-line:nth-child(1) { animation-delay: 0.1s; }
+        .terminal-line:nth-child(2) { animation-delay: 0.2s; }
+        .terminal-line:nth-child(3) { animation-delay: 0.3s; }
+        .terminal-line:nth-child(4) { animation-delay: 0.4s; }
+        .terminal-line:nth-child(5) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(6) { animation-delay: 0.6s; }
+        .terminal-line:nth-child(7) { animation-delay: 0.7s; }
 
-        .cta-section { padding: 100px 0; }
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
 
-        .cta-container {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 24px;
-            padding: 64px;
+        .t-muted { color: var(--text-muted); }
+        .t-green { color: #22c55e; }
+        .t-cyan { color: var(--accent); }
+        .t-white { color: var(--text-bright); }
+
+        /* CTA */
+        .cta-section {
+            padding: 120px 0 160px;
+        }
+
+        .cta-card {
+            background: linear-gradient(135deg, var(--accent-subtle), rgba(139, 92, 246, 0.05));
+            border: 1px solid rgba(166, 218, 255, 0.15);
+            border-radius: 32px;
+            padding: 80px;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
-        .cta-container::before {
+
+        .cta-card::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: var(--gradient);
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
         }
-        .cta-container h2 {
-            font-size: 2rem;
-            font-weight: 700;
+
+        .cta-card h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-bright);
             margin-bottom: 16px;
+            letter-spacing: -0.02em;
         }
-        .cta-container p {
+
+        .cta-card > p {
             color: var(--text-muted);
-            margin-bottom: 32px;
-            max-width: 500px;
+            margin-bottom: 40px;
+            max-width: 480px;
             margin-left: auto;
             margin-right: auto;
         }
 
-        .install-code {
-            background: rgba(0,0,0,0.5);
+        .install-cmd {
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px 32px;
-            display: inline-flex;
-            align-items: center;
-            gap: 16px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
-            margin-bottom: 32px;
+            color: var(--text);
+            display: inline-block;
+            margin-bottom: 40px;
         }
-        .install-code code { color: var(--text); }
-        .install-code .pipe { color: var(--text-muted); }
 
+        .install-cmd .pipe { color: var(--text-muted); }
+
+        /* Footer */
         footer {
             padding: 48px 0;
             border-top: 1px solid var(--border);
         }
 
-        .footer-content {
+        .footer-inner {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -594,328 +695,368 @@
 
         .footer-links {
             display: flex;
-            gap: 24px;
+            align-items: center;
+            gap: 32px;
         }
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.875rem;
-            transition: color 0.2s;
-        }
+
         .footer-links a {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s ease;
         }
+
         .footer-links a:hover { color: var(--text); }
-        .footer-links svg { flex-shrink: 0; }
+
+        .footer-links svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
 
         .footer-credit {
             color: var(--text-muted);
             font-size: 0.8rem;
         }
+
         .footer-credit a {
             color: var(--text-muted);
             text-decoration: none;
+            transition: color 0.2s ease;
         }
+
         .footer-credit a:hover { color: var(--accent); }
 
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .workflow-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .benchmark-card { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 810px) {
+            .nav-inner { padding: 0 20px; }
+            .nav-links { display: none; }
+            .hero { padding: 140px 0 80px; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero-actions { flex-direction: column; width: 100%; }
+            .btn { width: 100%; justify-content: center; }
+            .section { padding: 80px 0; }
+            .workflow-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .benchmark-card { padding: 40px 24px; }
+            .stats { flex-direction: column; gap: 24px; }
+            .cta-card { padding: 48px 24px; }
+            .cta-card h2 { font-size: 1.75rem; }
+            .footer-inner { flex-direction: column; gap: 24px; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; }
+        }
+
+        /* Scroll Reveal */
         .reveal {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
             transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .reveal.visible {
             opacity: 1;
             transform: translateY(0);
         }
 
-        @media (max-width: 900px) {
-            .flow-grid { grid-template-columns: repeat(2, 1fr); }
-            .features-grid { grid-template-columns: repeat(2, 1fr); }
-            .benchmark-container { grid-template-columns: 1fr; }
+        /* Mobile menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
         }
 
-        @media (max-width: 640px) {
-            .flow-grid { grid-template-columns: 1fr; }
-            .features-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .hero { padding: 80px 0 60px; }
-            .benchmark-container { padding: 32px 24px; }
-            .cta-container { padding: 40px 24px; }
-            .token-stats { flex-direction: column; gap: 16px; }
-            .footer-content { flex-direction: column; gap: 24px; text-align: center; }
+        @media (max-width: 810px) {
+            .mobile-menu-btn { display: block; }
         }
     </style>
 </head>
 <body>
-    <div class="bg-grid"></div>
-    <div class="bg-gradient"></div>
+    <div class="glow-bg"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
 
     <nav>
-        <div class="container nav-content">
+        <div class="nav-inner">
             <a href="#" class="logo">
-                <span class="logo-icon">M</span>
-                Mothership Core
+                <span class="logo-mark">M</span>
+                Mothership
             </a>
             <ul class="nav-links">
-                <li><a href="#flow">How It Works</a></li>
+                <li><a href="#workflow">Workflow</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#benchmark">Benchmark</a></li>
                 <li><a href="./flowchart/">Demo</a></li>
-                <li><a href="https://github.com/chriscarterux/Mothership---Core">GitHub</a></li>
+                <li><a href="https://github.com/chriscarterux/Mothership---Core" class="nav-cta">GitHub</a></li>
             </ul>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="container">
-            <div class="badge fade-in">
-                <span class="badge-dot"></span>
-                Open Source
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Open Source
+                </div>
+                <h1>The <span class="serif">autonomous</span> loop<br>that <span class="accent">ships code</span></h1>
+                <p class="hero-subtitle">
+                    Mothership wraps any AI CLI in a loop that plans, builds, tests, and reviews. One story per iteration. Fresh context each time.
+                </p>
+                <div class="hero-actions">
+                    <a href="https://github.com/chriscarterux/Mothership---Core" class="btn btn-primary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        Get Started
+                    </a>
+                    <a href="./flowchart/" class="btn btn-secondary">View Demo</a>
+                </div>
+                <div class="hero-code" onclick="navigator.clipboard.writeText('./mothership.sh build 20')">
+                    <span class="prompt">$</span> <span class="cmd">./mothership.sh build 20</span>
+                </div>
             </div>
-            <h1 class="fade-in fade-in-delay-1">A loop that <span>plans, builds,<br>tests, and reviews</span></h1>
-            <p class="hero-subtitle fade-in fade-in-delay-2">
-                Mothership Core wraps any AI CLI in an autonomous loop. One story per iteration. Fresh context each time. Verify everything yourself.
-            </p>
-            <div class="hero-code fade-in fade-in-delay-3" onclick="copyToClipboard('./mothership.sh benchmark')">
-                <span class="prompt">$</span>
-                <span class="cmd">./mothership.sh benchmark</span>
-                <svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-            </div>
-            <div class="btn-group fade-in fade-in-delay-4">
-                <a href="https://github.com/chriscarterux/Mothership---Core" class="btn btn-primary">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                    </svg>
-                    View on GitHub
-                </a>
-                <a href="./flowchart/" class="btn btn-secondary">Try Interactive Demo</a>
-            </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="flow-section" id="flow">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label">Workflow</div>
-                <h2 class="section-title">Four modes, fresh context each time</h2>
-                <p class="section-desc">Each iteration starts clean. No context drift. No forgotten state.</p>
-            </div>
-            <div class="flow-grid">
-                <div class="flow-step reveal">
-                    <div class="flow-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                            <path d="M12 11h4"/><path d="M12 16h4"/>
-                            <path d="M8 11h.01"/><path d="M8 16h.01"/>
-                        </svg>
-                    </div>
-                    <div class="flow-number">01</div>
-                    <div class="flow-label">Plan</div>
-                    <div class="flow-agent">Cipher</div>
+        <section class="section" id="workflow">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-label">Workflow</span>
+                    <h2 class="section-title">Four modes. <span class="serif">Fresh context</span> each time.</h2>
+                    <p class="section-desc">Each iteration starts clean. No context drift. No forgotten state.</p>
                 </div>
-                <div class="flow-step reveal">
-                    <div class="flow-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="4 17 10 11 4 5"/>
-                            <line x1="12" x2="20" y1="19" y2="19"/>
-                        </svg>
-                    </div>
-                    <div class="flow-number">02</div>
-                    <div class="flow-label">Build</div>
-                    <div class="flow-agent">Vector</div>
-                </div>
-                <div class="flow-step reveal">
-                    <div class="flow-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/>
-                            <path d="M6.453 15h11.094"/>
-                            <path d="M8.5 2h7"/>
-                        </svg>
-                    </div>
-                    <div class="flow-number">03</div>
-                    <div class="flow-label">Test</div>
-                    <div class="flow-agent">Cortex</div>
-                </div>
-                <div class="flow-step reveal">
-                    <div class="flow-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
-                            <path d="m9 12 2 2 4-4"/>
-                        </svg>
-                    </div>
-                    <div class="flow-number">04</div>
-                    <div class="flow-label">Review</div>
-                    <div class="flow-agent">Sentinel</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features-section" id="features">
-        <div class="container">
-            <div class="section-header reveal">
-                <div class="section-label">Features</div>
-                <h2 class="section-title">Everything you need to ship</h2>
-                <p class="section-desc">No vendor lock-in. Works with your stack.</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                            <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                            <path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
-                        </svg>
-                    </div>
-                    <h3>Auto-Planning</h3>
-                    <p>Cipher reads your docs and creates structured stories with acceptance criteria. No manual PRD writing.</p>
-                </div>
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m17 2 4 4-4 4"/>
-                            <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
-                            <path d="m7 22-4-4 4-4"/>
-                            <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
-                        </svg>
-                    </div>
-                    <h3>Loop Until Done</h3>
-                    <p>Fresh context each iteration. Never loses track. Runs autonomously until all stories complete.</p>
-                </div>
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 2v17.5A2.5 2.5 0 0 1 6.5 22A2.5 2.5 0 0 1 4 19.5V2"/>
-                            <path d="M20 2v17.5a2.5 2.5 0 0 1-2.5 2.5a2.5 2.5 0 0 1-2.5-2.5V2"/>
-                            <path d="M3 2h7"/><path d="M14 2h7"/>
-                            <path d="M9 16H4"/><path d="M20 16h-5"/>
-                        </svg>
-                    </div>
-                    <h3>Test Generation</h3>
-                    <p>Cortex writes tests for edge cases: null inputs, error handling, boundary conditions.</p>
-                </div>
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                    </div>
-                    <h3>Code Review</h3>
-                    <p>Sentinel checks security, patterns, and quality. Approves or creates fix tasks.</p>
-                </div>
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="4" y="4" width="16" height="16" rx="2"/>
-                            <rect x="9" y="9" width="6" height="6"/>
-                            <path d="M15 2v2"/><path d="M15 20v2"/>
-                            <path d="M2 15h2"/><path d="M2 9h2"/>
-                            <path d="M20 15h2"/><path d="M20 9h2"/>
-                            <path d="M9 2v2"/><path d="M9 20v2"/>
-                        </svg>
-                    </div>
-                    <h3>Any AI Tool</h3>
-                    <p>Works with Claude, AMP, Cursor, Aider. Not locked to one provider or API.</p>
-                </div>
-                <div class="feature-card reveal">
-                    <div class="feature-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <ellipse cx="12" cy="5" rx="9" ry="3"/>
-                            <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
-                            <path d="M3 12A9 3 0 0 0 21 12"/>
-                        </svg>
-                    </div>
-                    <h3>Linear or JSON</h3>
-                    <p>Store stories in Linear for teams or local JSON for solo projects. Simple config switch.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="benchmark-section" id="benchmark">
-        <div class="container">
-            <div class="benchmark-container reveal">
-                <div class="benchmark-content">
-                    <div class="section-label">Transparency</div>
-                    <h2>Verify token usage yourself</h2>
-                    <p>Don't trust claims. Run the benchmark command and see exactly what gets loaded per iteration.</p>
-                    <div class="token-stats">
-                        <div class="stat">
-                            <div class="stat-value">1,056</div>
-                            <div class="stat-label">tokens per run</div>
+                <div class="workflow-grid">
+                    <div class="workflow-card reveal">
+                        <div class="workflow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <path d="M12 11h4"/><path d="M12 16h4"/>
+                                <path d="M8 11h.01"/><path d="M8 16h.01"/>
+                            </svg>
                         </div>
-                        <div class="stat">
-                            <div class="stat-value">~$0.003</div>
-                            <div class="stat-label">cost per iteration</div>
+                        <div class="workflow-number">01</div>
+                        <div class="workflow-title">Plan</div>
+                        <div class="workflow-agent">Cipher</div>
+                    </div>
+                    <div class="workflow-card reveal">
+                        <div class="workflow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 17 10 11 4 5"/>
+                                <line x1="12" x2="20" y1="19" y2="19"/>
+                            </svg>
+                        </div>
+                        <div class="workflow-number">02</div>
+                        <div class="workflow-title">Build</div>
+                        <div class="workflow-agent">Vector</div>
+                    </div>
+                    <div class="workflow-card reveal">
+                        <div class="workflow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/>
+                                <path d="M6.453 15h11.094"/>
+                                <path d="M8.5 2h7"/>
+                            </svg>
+                        </div>
+                        <div class="workflow-number">03</div>
+                        <div class="workflow-title">Test</div>
+                        <div class="workflow-agent">Cortex</div>
+                    </div>
+                    <div class="workflow-card reveal">
+                        <div class="workflow-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="workflow-number">04</div>
+                        <div class="workflow-title">Review</div>
+                        <div class="workflow-agent">Sentinel</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section" id="features">
+            <div class="container">
+                <div class="section-header reveal">
+                    <span class="section-label">Features</span>
+                    <h2 class="section-title">Everything you need to <span class="serif">ship</span></h2>
+                    <p class="section-desc">No vendor lock-in. Works with your stack.</p>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
+                                <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
+                                <path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
+                            </svg>
+                        </div>
+                        <h3>Auto-Planning</h3>
+                        <p>Cipher reads your docs and creates structured stories with acceptance criteria.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m17 2 4 4-4 4"/>
+                                <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
+                                <path d="m7 22-4-4 4-4"/>
+                                <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
+                            </svg>
+                        </div>
+                        <h3>Loop Until Done</h3>
+                        <p>Fresh context each iteration. Never loses track. Runs until complete.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 2v17.5A2.5 2.5 0 0 1 6.5 22A2.5 2.5 0 0 1 4 19.5V2"/>
+                                <path d="M20 2v17.5a2.5 2.5 0 0 1-2.5 2.5a2.5 2.5 0 0 1-2.5-2.5V2"/>
+                                <path d="M3 2h7"/><path d="M14 2h7"/>
+                                <path d="M9 16H4"/><path d="M20 16h-5"/>
+                            </svg>
+                        </div>
+                        <h3>Test Generation</h3>
+                        <p>Cortex writes tests for edge cases, error handling, and boundaries.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </div>
+                        <h3>Code Review</h3>
+                        <p>Sentinel checks security, patterns, and quality before merge.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="4" width="16" height="16" rx="2"/>
+                                <rect x="9" y="9" width="6" height="6"/>
+                                <path d="M15 2v2"/><path d="M15 20v2"/>
+                                <path d="M2 15h2"/><path d="M2 9h2"/>
+                                <path d="M20 15h2"/><path d="M20 9h2"/>
+                                <path d="M9 2v2"/><path d="M9 20v2"/>
+                            </svg>
+                        </div>
+                        <h3>Any AI Tool</h3>
+                        <p>Works with Claude, AMP, Cursor, Aider. No vendor lock-in.</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <ellipse cx="12" cy="5" rx="9" ry="3"/>
+                                <path d="M3 5V19A9 3 0 0 0 21 19V5"/>
+                                <path d="M3 12A9 3 0 0 0 21 12"/>
+                            </svg>
+                        </div>
+                        <h3>Linear or JSON</h3>
+                        <p>Store stories in Linear for teams or local JSON for solo projects.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="benchmark-section" id="benchmark">
+            <div class="container">
+                <div class="benchmark-card reveal">
+                    <div class="benchmark-content">
+                        <span class="section-label">Transparency</span>
+                        <h2>Verify token usage yourself</h2>
+                        <p>Don't trust claims. Run the benchmark command and see exactly what gets loaded per iteration.</p>
+                        <div class="stats">
+                            <div>
+                                <div class="stat-value">1,056</div>
+                                <div class="stat-label">tokens per run</div>
+                            </div>
+                            <div>
+                                <div class="stat-value">~$0.003</div>
+                                <div class="stat-label">cost per iteration</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="benchmark-terminal">
-                    <div class="terminal-header">
-                        <span class="terminal-dot red"></span>
-                        <span class="terminal-dot yellow"></span>
-                        <span class="terminal-dot green"></span>
-                    </div>
-                    <div class="terminal-body">
-                        <div class="terminal-line"><span class="terminal-prompt">$</span> <span class="terminal-cmd">./mothership.sh benchmark</span></div>
-                        <div class="terminal-line">&nbsp;</div>
-                        <div class="terminal-line"><span class="terminal-file">  .mothership/mothership.md</span>  <span class="terminal-tokens">1056 tokens</span></div>
-                        <div class="terminal-line">&nbsp;</div>
-                        <div class="terminal-line">  ─────────────────────────────────────</div>
-                        <div class="terminal-line">  TOTAL PER RUN           <span class="terminal-total">1,056 tokens</span></div>
-                        <div class="terminal-line">  Estimated cost/run: <span class="terminal-cost">~$0.003</span> (Claude Sonnet)</div>
+                    <div class="terminal">
+                        <div class="terminal-header">
+                            <span class="terminal-dot red"></span>
+                            <span class="terminal-dot yellow"></span>
+                            <span class="terminal-dot green"></span>
+                        </div>
+                        <div class="terminal-body">
+                            <div class="terminal-line"><span class="t-muted">$</span> <span class="t-green">./mothership.sh benchmark</span></div>
+                            <div class="terminal-line">&nbsp;</div>
+                            <div class="terminal-line"><span class="t-muted">  .mothership/mothership.md</span>  <span class="t-cyan">1056 tokens</span></div>
+                            <div class="terminal-line">&nbsp;</div>
+                            <div class="terminal-line">  ─────────────────────────────────────</div>
+                            <div class="terminal-line">  TOTAL PER RUN           <span class="t-green">1,056 tokens</span></div>
+                            <div class="terminal-line">  Estimated cost/run: <span class="t-cyan">~$0.003</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <section class="cta-section">
-        <div class="container">
-            <div class="cta-container reveal">
-                <h2>Start shipping with Mothership</h2>
-                <p>One command to install. Run the doctor command to verify your setup is ready.</p>
-                <div class="install-code">
-                    <code>curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh <span class="pipe">|</span> bash</code>
-                </div>
-                <div class="btn-group">
-                    <a href="https://github.com/chriscarterux/Mothership---Core" class="btn btn-primary">Get Started</a>
-                    <a href="https://github.com/chriscarterux/Mothership---Core#readme" class="btn btn-secondary">Read Docs</a>
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-card reveal">
+                    <h2>Start shipping with Mothership</h2>
+                    <p>One command to install. Run doctor to verify your setup.</p>
+                    <div class="install-cmd">
+                        curl -fsSL https://raw.githubusercontent.com/chriscarterux/Mothership---Core/main/install.sh <span class="pipe">|</span> bash
+                    </div>
+                    <div class="hero-actions" style="justify-content: center;">
+                        <a href="https://github.com/chriscarterux/Mothership---Core" class="btn btn-primary">Get Started</a>
+                        <a href="https://github.com/chriscarterux/Mothership---Core#readme" class="btn btn-secondary">Documentation</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
-        <div class="container footer-content">
-            <div class="footer-links">
-                <a href="https://linkedin.com/in/chriscarterux" target="_blank"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn</a>
-                <a href="mailto:christophercarter@hey.com"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>Email</a>
-                <a href="https://github.com/chriscarterux/Mothership---Core">GitHub</a>
-                <a href="./flowchart/">Demo</a>
-                <a href="https://github.com/chriscarterux/Mothership---Core/blob/main/LICENSE">MIT License</a>
-            </div>
-            <div class="footer-credit">
-                Built on ideas from <a href="https://ghuntley.com/ralph/">Geoffrey Huntley</a> and <a href="https://github.com/snarktank/ralph">Ryan Carson</a>
+        <div class="container">
+            <div class="footer-inner">
+                <div class="footer-links">
+                    <a href="https://linkedin.com/in/chriscarterux" target="_blank">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                        LinkedIn
+                    </a>
+                    <a href="mailto:christophercarter@hey.com">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                        Email
+                    </a>
+                    <a href="https://github.com/chriscarterux/Mothership---Core">GitHub</a>
+                    <a href="./flowchart/">Demo</a>
+                    <a href="https://github.com/chriscarterux/Mothership---Core/blob/main/LICENSE">MIT License</a>
+                </div>
+                <div class="footer-credit">
+                    Built on ideas from <a href="https://ghuntley.com/ralph/">Geoffrey Huntley</a> & <a href="https://github.com/snarktank/ralph">Ryan Carson</a>
+                </div>
             </div>
         </div>
     </footer>
 
     <script>
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text);
-            const el = document.querySelector('.hero-code');
-            el.style.borderColor = 'var(--success)';
-            setTimeout(() => el.style.borderColor = '', 1000);
-        }
-
+        // Scroll reveal
         const reveals = document.querySelectorAll('.reveal');
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
@@ -923,12 +1064,13 @@
                     entry.target.classList.add('visible');
                 }
             });
-        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
 
         reveals.forEach(el => observer.observe(el));
 
-        document.querySelectorAll('.flow-step').forEach((step, i) => {
-            step.style.transitionDelay = `${i * 0.1}s`;
+        // Stagger animations
+        document.querySelectorAll('.workflow-card').forEach((card, i) => {
+            card.style.transitionDelay = `${i * 0.1}s`;
         });
 
         document.querySelectorAll('.feature-card').forEach((card, i) => {
