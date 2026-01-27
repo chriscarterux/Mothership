@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mothership - Interactive Demo</title>
+    <meta name="description" content="Interactive demo of the Mothership autonomous AI development loop. See how agents plan, build, test, and review your code.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -26,9 +27,15 @@
             --text-muted: #6b7280;
             --accent: #a6daff;
             --accent-glow: rgba(166, 218, 255, 0.15);
+            --accent-subtle: rgba(166, 218, 255, 0.08);
+            --gradient-glow: radial-gradient(ellipse 50% 80% at 50% -20%, rgba(166, 218, 255, 0.12), transparent);
             --green: #22c55e;
             --orange: #f97316;
             --purple: #8b5cf6;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         body {
@@ -36,8 +43,8 @@
             background: var(--bg);
             color: var(--text);
             line-height: 1.6;
-            min-height: 100vh;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
         }
 
@@ -57,19 +64,62 @@
             z-index: 0;
         }
 
-        /* Glow */
+        /* Glow Background */
         .glow-bg {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             height: 100vh;
-            background: radial-gradient(ellipse 50% 80% at 50% -20%, rgba(166, 218, 255, 0.1), transparent);
+            background: var(--gradient-glow);
             pointer-events: none;
             z-index: 0;
         }
 
-        /* Nav */
+        .glow-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb-1 {
+            top: -200px;
+            left: 20%;
+            background: rgba(166, 218, 255, 0.15);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            top: 40%;
+            right: -100px;
+            background: rgba(139, 92, 246, 0.1);
+            animation: float 25s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 20px); }
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 810px) {
+            .container { padding: 0 20px; }
+        }
+
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -78,6 +128,7 @@
             height: 72px;
             z-index: 100;
             backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             background: rgba(4, 7, 13, 0.8);
             border-bottom: 1px solid var(--border);
         }
@@ -99,17 +150,19 @@
             text-decoration: none;
             color: var(--text-bright);
             font-weight: 600;
+            font-size: 1rem;
         }
 
         .logo-mark {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--accent), var(--purple));
+            background: linear-gradient(135deg, var(--accent) 0%, rgba(139, 92, 246, 0.8) 100%);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
+            font-size: 1.1rem;
             color: var(--bg);
         }
 
@@ -130,12 +183,8 @@
             transition: all 0.2s ease;
         }
 
-        .nav-links a:hover {
-            color: var(--text);
-            background: var(--bg-card);
-        }
-
-        .nav-links a.nav-active {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text);
             background: var(--bg-card);
         }
@@ -153,23 +202,48 @@
             background: var(--text-bright) !important;
         }
 
-        .mobile-only {
+        .mobile-menu-btn {
             display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            padding: 8px;
         }
 
-        .status {
+        @media (max-width: 810px) {
+            .nav-links { display: none; }
+            .mobile-menu-btn { display: block; }
+            .nav-inner { padding: 0 20px; }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 60vh;
             display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 160px 0 80px;
+            position: relative;
+        }
+
+        .hero-badge {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
             padding: 8px 16px;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-radius: 100px;
             font-size: 0.8rem;
-            color: var(--green);
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .status-dot {
+        .hero-badge-dot {
             width: 6px;
             height: 6px;
             background: var(--green);
@@ -182,57 +256,49 @@
             50% { opacity: 0.5; }
         }
 
-        /* Main */
-        main {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 160px 40px 80px;
-            position: relative;
-            z-index: 1;
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            color: var(--text-bright);
+            margin-bottom: 20px;
+            max-width: 700px;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
         }
 
-        .page-header {
-            text-align: center;
-            margin-bottom: 80px;
-            animation: fadeUp 0.6s ease-out;
+        .hero-subtitle {
+            font-size: 1.15rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 48px;
+            line-height: 1.7;
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
         }
 
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .section-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            color: var(--accent);
-            margin-bottom: 16px;
+        /* Flowchart Section */
+        .flowchart-section {
+            padding: 40px 0 120px;
         }
 
-        .page-header h1 {
-            font-size: clamp(2rem, 5vw, 3rem);
-            font-weight: 600;
-            color: var(--text-bright);
-            letter-spacing: -0.02em;
-            margin-bottom: 12px;
-        }
-
-        .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        /* Flowchart */
         .flowchart {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 16px;
             margin-bottom: 64px;
             flex-wrap: wrap;
-            animation: fadeUp 0.6s ease-out 0.1s both;
         }
 
         .step {
@@ -240,14 +306,21 @@
             flex-direction: column;
             align-items: center;
             cursor: pointer;
-            padding: 20px;
-            border-radius: 16px;
-            transition: all 0.3s ease;
+            padding: 24px;
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+            border: 1px solid transparent;
         }
 
-        .step:hover,
+        .step:hover {
+            background: var(--bg-card);
+            border-color: var(--border);
+        }
+
         .step.active {
             background: var(--bg-card);
+            border-color: var(--border-light);
         }
 
         .step-icon {
@@ -264,72 +337,110 @@
             position: relative;
         }
 
+        .step-icon::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
         .step-icon svg {
             width: 32px;
             height: 32px;
-            stroke: var(--text);
-            transition: stroke 0.3s ease;
+            stroke: var(--text-muted);
+            transition: all 0.3s ease;
         }
 
         .step:hover .step-icon,
         .step.active .step-icon {
-            transform: scale(1.08);
+            transform: scale(1.05) translateY(-4px);
             border-color: var(--accent);
+        }
+
+        .step:hover .step-icon::before,
+        .step.active .step-icon::before {
+            opacity: 1;
         }
 
         .step.active .step-icon {
             box-shadow: 0 0 60px var(--accent-glow);
         }
 
-        .step[data-step="plan"] .step-icon { border-color: rgba(166, 218, 255, 0.2); }
-        .step[data-step="plan"].active .step-icon { border-color: var(--accent); box-shadow: 0 0 60px var(--accent-glow); }
+        .step:hover .step-icon svg,
+        .step.active .step-icon svg {
+            stroke: var(--accent);
+        }
+
+        /* Step colors */
+        .step[data-step="plan"]:hover .step-icon,
+        .step[data-step="plan"].active .step-icon {
+            border-color: var(--accent);
+            box-shadow: 0 0 60px var(--accent-glow);
+        }
+        .step[data-step="plan"]:hover .step-icon svg,
         .step[data-step="plan"].active .step-icon svg { stroke: var(--accent); }
+        .step[data-step="plan"].active .step-agent { color: var(--accent); }
 
-        .step[data-step="build"] .step-icon { border-color: rgba(34, 197, 94, 0.2); }
-        .step[data-step="build"].active .step-icon { border-color: var(--green); box-shadow: 0 0 60px rgba(34, 197, 94, 0.15); }
+        .step[data-step="build"]:hover .step-icon,
+        .step[data-step="build"].active .step-icon {
+            border-color: var(--green);
+            box-shadow: 0 0 60px rgba(34, 197, 94, 0.15);
+        }
+        .step[data-step="build"]:hover .step-icon svg,
         .step[data-step="build"].active .step-icon svg { stroke: var(--green); }
+        .step[data-step="build"].active .step-agent { color: var(--green); }
 
-        .step[data-step="test"] .step-icon { border-color: rgba(249, 115, 22, 0.2); }
-        .step[data-step="test"].active .step-icon { border-color: var(--orange); box-shadow: 0 0 60px rgba(249, 115, 22, 0.15); }
+        .step[data-step="test"]:hover .step-icon,
+        .step[data-step="test"].active .step-icon {
+            border-color: var(--orange);
+            box-shadow: 0 0 60px rgba(249, 115, 22, 0.15);
+        }
+        .step[data-step="test"]:hover .step-icon svg,
         .step[data-step="test"].active .step-icon svg { stroke: var(--orange); }
+        .step[data-step="test"].active .step-agent { color: var(--orange); }
 
-        .step[data-step="review"] .step-icon { border-color: rgba(139, 92, 246, 0.2); }
-        .step[data-step="review"].active .step-icon { border-color: var(--purple); box-shadow: 0 0 60px rgba(139, 92, 246, 0.15); }
+        .step[data-step="review"]:hover .step-icon,
+        .step[data-step="review"].active .step-icon {
+            border-color: var(--purple);
+            box-shadow: 0 0 60px rgba(139, 92, 246, 0.15);
+        }
+        .step[data-step="review"]:hover .step-icon svg,
         .step[data-step="review"].active .step-icon svg { stroke: var(--purple); }
+        .step[data-step="review"].active .step-agent { color: var(--purple); }
 
         .step-label {
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: var(--text-bright);
             margin-bottom: 4px;
         }
 
         .step-agent {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--text-muted);
             font-weight: 500;
             transition: color 0.3s ease;
         }
 
-        .step[data-step="plan"].active .step-agent { color: var(--accent); }
-        .step[data-step="build"].active .step-agent { color: var(--green); }
-        .step[data-step="test"].active .step-agent { color: var(--orange); }
-        .step[data-step="review"].active .step-agent { color: var(--purple); }
-
         .connector {
-            width: 40px;
+            width: 48px;
             height: 2px;
-            background: var(--border);
+            background: linear-gradient(90deg, var(--border), var(--border-light), var(--border));
             position: relative;
         }
 
         .connector::after {
             content: '';
             position: absolute;
-            right: -4px;
-            top: -3px;
-            border: 4px solid transparent;
-            border-left-color: var(--border);
+            right: -5px;
+            top: -4px;
+            border: 5px solid transparent;
+            border-left-color: var(--border-light);
         }
 
         /* Details Panel */
@@ -338,12 +449,14 @@
             border: 1px solid var(--border);
             border-radius: 24px;
             overflow: hidden;
-            transition: all 0.4s ease;
-            animation: fadeUp 0.6s ease-out 0.2s both;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 900px;
+            margin: 0 auto;
         }
 
         .details-panel.active {
             border-color: var(--border-light);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .panel-header {
@@ -352,27 +465,30 @@
             gap: 20px;
             padding: 28px 32px;
             border-bottom: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.01);
         }
 
         .panel-icon {
             width: 56px;
             height: 56px;
             background: var(--bg-elevated);
+            border: 1px solid var(--border);
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
         }
 
         .panel-icon svg {
             width: 26px;
             height: 26px;
-            stroke: var(--text);
+            stroke: var(--text-muted);
         }
 
         .panel-title {
             flex: 1;
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             font-weight: 600;
             color: var(--text-bright);
         }
@@ -424,6 +540,7 @@
             line-height: 1.7;
         }
 
+        /* Terminal */
         .terminal {
             background: #000;
             border: 1px solid var(--border);
@@ -432,15 +549,17 @@
         }
 
         .terminal-header {
-            padding: 12px 16px;
-            display: flex;
-            gap: 8px;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.03);
             border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .terminal-dot {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
             background: #27272a;
         }
@@ -450,7 +569,7 @@
         .terminal-dot.green { background: #22c55e; }
 
         .terminal-body {
-            padding: 16px 20px;
+            padding: 18px 22px;
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.85rem;
         }
@@ -469,6 +588,7 @@
             font-weight: 700;
             color: var(--accent);
             line-height: 1;
+            letter-spacing: -0.02em;
         }
 
         .time-unit {
@@ -481,7 +601,6 @@
         .demo-section {
             margin-top: 64px;
             text-align: center;
-            animation: fadeUp 0.6s ease-out 0.3s both;
         }
 
         .demo-btn {
@@ -517,15 +636,26 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Footer */
         footer {
             padding: 48px 0;
             border-top: 1px solid var(--border);
-            margin-top: 80px;
         }
 
         .footer-inner {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 0 40px;
             display: flex;
@@ -549,9 +679,7 @@
             transition: color 0.2s ease;
         }
 
-        .footer-links a:hover {
-            color: var(--text);
-        }
+        .footer-links a:hover { color: var(--text); }
 
         .footer-links svg {
             width: 16px;
@@ -570,22 +698,24 @@
             transition: color 0.2s ease;
         }
 
-        .footer-credit a:hover {
-            color: var(--accent);
-        }
+        .footer-credit a:hover { color: var(--accent); }
 
+        /* Responsive */
         @media (max-width: 810px) {
-            main { padding: 140px 20px 60px; }
-            .nav-inner { padding: 0 20px; }
-            .nav-links { display: none; }
-            .mobile-only { display: flex; }
-            .panel-content { grid-template-columns: 1fr; gap: 24px; }
-            .connector { display: none; }
+            .hero { padding: 140px 0 60px; min-height: auto; }
+            .hero h1 { font-size: 2rem; }
             .flowchart { gap: 8px; }
-            .step { padding: 12px; }
+            .step { padding: 16px; }
             .step-icon { width: 64px; height: 64px; }
             .step-icon svg { width: 26px; height: 26px; }
-            .footer-inner { flex-direction: column; gap: 24px; text-align: center; padding: 0 20px; }
+            .connector { display: none; }
+            .panel-content { grid-template-columns: 1fr; gap: 24px; }
+            .footer-inner {
+                flex-direction: column;
+                gap: 24px;
+                text-align: center;
+                padding: 0 20px;
+            }
             .footer-links { flex-wrap: wrap; justify-content: center; gap: 20px; }
         }
     </style>
@@ -595,6 +725,8 @@
     <canvas id="starfield"></canvas>
 
     <div class="glow-bg"></div>
+    <div class="glow-orb glow-orb-1"></div>
+    <div class="glow-orb glow-orb-2"></div>
 
     <nav>
         <div class="nav-inner">
@@ -606,114 +738,128 @@
                 <li><a href="../#workflow">Workflow</a></li>
                 <li><a href="../#features">Features</a></li>
                 <li><a href="../#benchmark">Benchmark</a></li>
-                <li><a href="./" class="nav-active">Demo</a></li>
+                <li><a href="./" class="active">Demo</a></li>
                 <li><a href="https://github.com/chriscarterux/Mothership" class="nav-cta">GitHub</a></li>
             </ul>
-            <div class="status mobile-only">
-                <span class="status-dot"></span>
-                Demo
-            </div>
+            <button class="mobile-menu-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
         </div>
     </nav>
 
     <main>
-        <div class="page-header">
-            <div class="section-label">Interactive Demo</div>
-            <h1>Agent <span class="serif">Command Flow</span></h1>
-            <p>Click any phase to explore the workflow</p>
-        </div>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Interactive Demo
+                </div>
+                <h1>Agent <span class="serif">Command</span> Flow</h1>
+                <p class="hero-subtitle">
+                    Click any phase to explore how Mothership agents work together to ship your code.
+                </p>
+            </div>
+        </section>
 
-        <div class="flowchart">
-            <div class="step" data-step="plan">
-                <div class="step-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                        <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
-                        <path d="M12 11h4"/><path d="M12 16h4"/>
-                        <path d="M8 11h.01"/><path d="M8 16h.01"/>
-                    </svg>
-                </div>
-                <div class="step-label">Plan</div>
-                <div class="step-agent">Cipher</div>
-            </div>
-            <div class="connector"></div>
-            <div class="step" data-step="build">
-                <div class="step-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="4 17 10 11 4 5"/>
-                        <line x1="12" x2="20" y1="19" y2="19"/>
-                    </svg>
-                </div>
-                <div class="step-label">Build</div>
-                <div class="step-agent">Vector</div>
-            </div>
-            <div class="connector"></div>
-            <div class="step" data-step="test">
-                <div class="step-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/>
-                        <path d="M6.453 15h11.094"/>
-                        <path d="M8.5 2h7"/>
-                    </svg>
-                </div>
-                <div class="step-label">Test</div>
-                <div class="step-agent">Cortex</div>
-            </div>
-            <div class="connector"></div>
-            <div class="step" data-step="review">
-                <div class="step-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
-                        <path d="m9 12 2 2 4-4"/>
-                    </svg>
-                </div>
-                <div class="step-label">Review</div>
-                <div class="step-agent">Sentinel</div>
-            </div>
-        </div>
-
-        <div class="details-panel" id="detailsPanel">
-            <div class="panel-header">
-                <div class="panel-icon" id="panelIcon"></div>
-                <span class="panel-title" id="panelTitle">Select a Phase</span>
-                <button class="panel-close" id="panelClose">&times;</button>
-            </div>
-            <div class="panel-content">
-                <div class="detail-section">
-                    <h3>Function</h3>
-                    <p id="agentFunction">Click on any phase above to see details.</p>
-                </div>
-                <div class="detail-section">
-                    <h3>Output Signal</h3>
-                    <div class="terminal">
-                        <div class="terminal-header">
-                            <span class="terminal-dot red"></span>
-                            <span class="terminal-dot yellow"></span>
-                            <span class="terminal-dot green"></span>
+        <section class="flowchart-section">
+            <div class="container">
+                <div class="flowchart reveal">
+                    <div class="step" data-step="plan">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+                                <path d="M12 11h4"/><path d="M12 16h4"/>
+                                <path d="M8 11h.01"/><path d="M8 16h.01"/>
+                            </svg>
                         </div>
-                        <div class="terminal-body">
-                            <code id="outputTerminal">Awaiting signal...</code>
+                        <div class="step-label">Plan</div>
+                        <div class="step-agent">Cipher</div>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="step" data-step="build">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 17 10 11 4 5"/>
+                                <line x1="12" x2="20" y1="19" y2="19"/>
+                            </svg>
+                        </div>
+                        <div class="step-label">Build</div>
+                        <div class="step-agent">Vector</div>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="step" data-step="test">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/>
+                                <path d="M6.453 15h11.094"/>
+                                <path d="M8.5 2h7"/>
+                            </svg>
+                        </div>
+                        <div class="step-label">Test</div>
+                        <div class="step-agent">Cortex</div>
+                    </div>
+                    <div class="connector"></div>
+                    <div class="step" data-step="review">
+                        <div class="step-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                        </div>
+                        <div class="step-label">Review</div>
+                        <div class="step-agent">Sentinel</div>
+                    </div>
+                </div>
+
+                <div class="details-panel reveal" id="detailsPanel">
+                    <div class="panel-header">
+                        <div class="panel-icon" id="panelIcon"></div>
+                        <span class="panel-title" id="panelTitle">Select a Phase</span>
+                        <button class="panel-close" id="panelClose">&times;</button>
+                    </div>
+                    <div class="panel-content">
+                        <div class="detail-section">
+                            <h3>Function</h3>
+                            <p id="agentFunction">Click on any phase above to see details about each agent.</p>
+                        </div>
+                        <div class="detail-section">
+                            <h3>Output Signal</h3>
+                            <div class="terminal">
+                                <div class="terminal-header">
+                                    <span class="terminal-dot red"></span>
+                                    <span class="terminal-dot yellow"></span>
+                                    <span class="terminal-dot green"></span>
+                                </div>
+                                <div class="terminal-body">
+                                    <code id="outputTerminal">Awaiting signal...</code>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-section">
+                            <h3>Duration</h3>
+                            <div class="time-display">
+                                <div class="time-value" id="timeValue">--</div>
+                                <div class="time-unit" id="timeUnit">minutes</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="detail-section">
-                    <h3>Duration</h3>
-                    <div class="time-display">
-                        <div class="time-value" id="timeValue">--</div>
-                        <div class="time-unit" id="timeUnit">minutes</div>
-                    </div>
+
+                <div class="demo-section reveal">
+                    <button class="demo-btn" id="runDemo">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        Run Demo Loop
+                    </button>
                 </div>
             </div>
-        </div>
-
-        <div class="demo-section">
-            <button class="demo-btn" id="runDemo">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-                Run Demo Loop
-            </button>
-        </div>
+        </section>
     </main>
 
     <footer>
@@ -914,6 +1060,20 @@
         })();
 
         // ========================================
+        // Scroll Reveal
+        // ========================================
+        const reveals = document.querySelectorAll('.reveal');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        reveals.forEach(el => revealObserver.observe(el));
+
+        // ========================================
         // Demo Page Logic
         // ========================================
         const icons = {
@@ -969,6 +1129,10 @@
             document.getElementById('outputTerminal').textContent = data.signal;
             document.getElementById('timeValue').textContent = data.time;
             document.getElementById('timeUnit').textContent = data.unit;
+
+            // Update panel icon color based on step
+            const panelIcon = document.getElementById('panelIcon');
+            panelIcon.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--' + (key === 'plan' ? 'accent' : key === 'build' ? 'green' : key === 'test' ? 'orange' : 'purple'));
         }
 
         document.querySelectorAll('.step').forEach(step => {
@@ -1008,6 +1172,8 @@
         }
 
         document.getElementById('runDemo').addEventListener('click', runDemo);
+
+        // Auto-select first step
         selectStep('plan');
     </script>
 </body>
