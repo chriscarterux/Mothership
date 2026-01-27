@@ -4,20 +4,19 @@
 
 # Supported tools and their invocation patterns
 declare -A AI_TOOLS=(
-    # Tool = "command|prompt_flag|file_flag|description"
+    # Primary tools (user's preferred)
     ["claude"]="claude|--print|--file|Claude Code CLI"
+    ["gemini"]="gemini|--prompt|--|Google Gemini CLI"
+    ["codex"]="codex|--prompt|--|OpenAI Codex CLI"
+    ["opencode"]="opencode|--prompt|--|OpenCode CLI"
+
+    # Additional tools
     ["amp"]="amp|--prompt|--file|AMP Code CLI"
     ["cursor"]="cursor|--prompt|--|Cursor (via CLI)"
-    ["aider"]="aider|--message|--file|Aider CLI"
-    ["codex"]="codex|--prompt|--|OpenAI Codex CLI"
-    ["gemini"]="gemini|--prompt|--|Google Gemini CLI"
-    ["cody"]="cody|--message|--|Sourcegraph Cody CLI"
-    ["continue"]="continue|--prompt|--|Continue.dev CLI"
-    ["opencode"]="opencode|--prompt|--|OpenCode CLI"
     ["custom"]="$CUSTOM_AI_CMD|$CUSTOM_PROMPT_FLAG|$CUSTOM_FILE_FLAG|Custom AI tool"
 )
 
-# Detect available AI tool
+# Detect available AI tool (in order of preference)
 detect_ai_tool() {
     # Check environment variable first
     if [[ -n "$AI_TOOL" ]]; then
@@ -26,7 +25,7 @@ detect_ai_tool() {
     fi
 
     # Auto-detect in order of preference
-    local tools=("claude" "amp" "cursor" "aider" "codex" "gemini" "cody" "continue" "opencode")
+    local tools=("claude" "gemini" "codex" "opencode" "amp" "cursor")
     for tool in "${tools[@]}"; do
         if command -v "$tool" &> /dev/null; then
             echo "$tool"
@@ -81,27 +80,32 @@ invoke_ai() {
                 $cmd --print "$prompt"
             fi
             ;;
-        amp)
+        gemini)
+            # Google Gemini CLI
             if [[ -n "$prompt_file" ]]; then
                 $cmd "$prompt_flag" "$(cat "$prompt_file") $prompt"
             else
                 $cmd "$prompt_flag" "$prompt"
             fi
             ;;
-        aider)
-            # Aider works differently - it's session-based
+        codex)
+            # OpenAI Codex CLI
             if [[ -n "$prompt_file" ]]; then
-                $cmd --message "$(cat "$prompt_file") $prompt" --yes
+                $cmd "$prompt_flag" "$(cat "$prompt_file") $prompt"
             else
-                $cmd --message "$prompt" --yes
+                $cmd "$prompt_flag" "$prompt"
             fi
             ;;
-        cursor)
-            # Cursor CLI (if available)
-            $cmd "$prompt_flag" "$prompt"
+        opencode)
+            # OpenCode CLI
+            if [[ -n "$prompt_file" ]]; then
+                $cmd "$prompt_flag" "$(cat "$prompt_file") $prompt"
+            else
+                $cmd "$prompt_flag" "$prompt"
+            fi
             ;;
         *)
-            # Generic invocation
+            # Generic invocation for other tools
             if [[ "$prompt_flag" != "--" ]]; then
                 $cmd $prompt_flag "$prompt"
             else

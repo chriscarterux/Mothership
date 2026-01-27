@@ -7,17 +7,12 @@ Mothership works with **any AI coding assistant** that can:
 
 ## Supported Tools
 
-| Tool | Status | Installation |
-|------|--------|--------------|
-| Claude Code | ✅ Full support | `npm install -g @anthropic-ai/claude-code` |
-| AMP | ✅ Full support | `npm install -g @anthropic-ai/amp` |
-| Aider | ✅ Full support | `pip install aider-chat` |
-| Cursor | ⚠️ CLI only | Download from cursor.sh |
-| Codex | ⚠️ Experimental | OpenAI CLI |
-| Gemini | ⚠️ Experimental | Google Cloud CLI |
-| Cody | ⚠️ Experimental | Sourcegraph CLI |
-| Continue | ⚠️ Experimental | continue.dev |
-| OpenCode | ⚠️ Experimental | Custom CLI |
+| Tool | Status | Notes |
+|------|--------|-------|
+| **Claude Code** | ✅ Primary | Full slash command support |
+| **Gemini** | ✅ Primary | Google Gemini CLI |
+| **Codex** | ✅ Primary | OpenAI Codex CLI |
+| **OpenCode** | ✅ Primary | OpenCode CLI |
 
 ## Usage
 
@@ -25,12 +20,14 @@ Mothership works with **any AI coding assistant** that can:
 ```bash
 ./mothership.sh build 20
 ```
-Mothership will auto-detect the first available AI tool.
+Mothership will auto-detect the first available AI tool in order: claude → gemini → codex → opencode
 
 ### Specify Tool
 ```bash
-AI_TOOL=aider ./mothership.sh build 20
-AI_TOOL=claude ./mothership.sh build 20
+AI_TOOL=gemini ./mothership.sh build 20
+AI_TOOL=claude ./mothership.sh plan "user auth"
+AI_TOOL=codex ./mothership.sh test
+AI_TOOL=opencode ./mothership.sh review
 ```
 
 ### Custom Tool
@@ -39,6 +36,49 @@ CUSTOM_AI_CMD=my-ai-cli \
 CUSTOM_PROMPT_FLAG=--prompt \
 AI_TOOL=custom \
 ./mothership.sh build 20
+```
+
+## Tool-Specific Setup
+
+### Claude Code
+```bash
+# Install
+npm install -g @anthropic-ai/claude-code
+
+# Prompts location
+.claude/commands/mothership-*.md
+
+# Usage
+claude "Read .mothership/mothership.md and run: build"
+# Or use slash commands:
+/mothership:build
+```
+
+### Gemini
+```bash
+# Install Google Cloud CLI with Gemini
+gcloud components install gemini
+
+# Usage
+AI_TOOL=gemini ./mothership.sh build
+```
+
+### Codex (OpenAI)
+```bash
+# Install OpenAI CLI
+pip install openai
+
+# Usage
+AI_TOOL=codex ./mothership.sh build
+```
+
+### OpenCode
+```bash
+# Install
+# See https://opencode.ai for installation
+
+# Usage
+AI_TOOL=opencode ./mothership.sh build
 ```
 
 ## Adding a New AI Tool
@@ -62,80 +102,44 @@ If your tool has a unique invocation pattern, add a case in `invoke_ai()`:
 
 ```bash
 case "$tool" in
-    # ... existing cases ...
     mytool)
         $cmd --special-flag "$prompt"
         ;;
 esac
 ```
 
-### 3. Test It
+### 3. Update mothership.sh
+
+Add detection in the elif chain:
+```bash
+elif command -v mytool &> /dev/null; then
+    AI_CMD="mytool"
+```
+
+## Prompts Are AI-Agnostic
+
+The prompts in `.mothership/mothership.md` and `.claude/commands/` are plain markdown. They work with any AI that can:
+
+1. Read the prompt
+2. Follow instructions
+3. Output signals like `<mothership>BUILT:ID</mothership>`
+
+### For Non-Claude Tools
+
+Copy the prompt content and pass it to your AI:
 
 ```bash
-AI_TOOL=mytool ./mothership.sh status
+# Gemini
+gemini --prompt "$(cat .mothership/mothership.md) Run: build"
+
+# Codex
+codex --prompt "$(cat .mothership/mothership.md) Run: build"
+
+# OpenCode
+opencode --prompt "$(cat .mothership/mothership.md) Run: build"
 ```
 
-## Tool Requirements
-
-For full Mothership compatibility, your AI tool must:
-
-### Required
-- [ ] Accept text prompts
-- [ ] Execute shell commands (for builds, tests)
-- [ ] Read/write files
-- [ ] Output text that includes signals like `<mothership>BUILT:ID</mothership>`
-
-### Recommended
-- [ ] Support streaming output (for progress visibility)
-- [ ] Support file context (for reading codebase.md)
-- [ ] Support git operations (for commits)
-
-### Optional
-- [ ] MCP server support (for enhanced tools)
-- [ ] Session persistence (for context between runs)
-
-## Prompts Location
-
-Mothership prompts are AI-agnostic and located in:
-
-```
-.mothership/
-├── mothership.md      # Main agent prompt (copy to project)
-├── config.json        # Project configuration
-├── checkpoint.md      # Current state
-└── codebase.md        # Project context
-
-# OR for Claude Code specifically:
-.claude/commands/      # Claude Code slash commands
-```
-
-## Making Prompts Work Across Tools
-
-### Claude Code
-Prompts work as slash commands in `.claude/commands/`:
-```
-/mothership:build
-/mothership:test
-```
-
-### Aider
-Add prompts to `.aider.conf.yml` or use directly:
-```bash
-aider --message "$(cat .mothership/mothership.md) Run: build"
-```
-
-### Cursor
-Add to `.cursorrules`:
-```
-@import .mothership/mothership.md
-```
-
-### Generic CLI
-```bash
-cat .mothership/mothership.md | my-ai-cli --stdin
-```
-
-## Signal Detection
+## Signal Format
 
 All AI tools must output signals in the format:
 ```
@@ -149,42 +153,4 @@ Examples:
 <mothership>VERIFIED:STORY-001</mothership>
 ```
 
-The `mothership.sh` loop detects these signals using regex:
-```bash
-grep -qE "<(mothership|vector|cortex|...)>($COMPLETE_SIGNALS)</"
-```
-
-This works regardless of which AI tool produces the output.
-
-## Troubleshooting
-
-### Tool Not Detected
-```bash
-# Check if tool is in PATH
-which claude
-which aider
-
-# Override detection
-AI_TOOL=claude ./mothership.sh build
-```
-
-### Signals Not Detected
-Ensure your AI tool outputs the exact signal format:
-```
-<mothership>BUILT:STORY-001</mothership>
-```
-
-Not:
-```
-Built story STORY-001  # Wrong - no tags
-<MOTHERSHIP>BUILT</MOTHERSHIP>  # Wrong - uppercase
-```
-
-### Prompts Not Loading
-```bash
-# Check prompt file exists
-cat .mothership/mothership.md
-
-# For Claude Code, check commands
-ls -la .claude/commands/
-```
+The `mothership.sh` loop detects these signals using regex - works regardless of which AI produces the output.

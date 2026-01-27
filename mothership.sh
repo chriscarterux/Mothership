@@ -131,14 +131,16 @@ case "$MODE" in
         fi
 
         # Check AI tool
-        if command -v amp &> /dev/null; then
-            success "AI tool detected: amp"
-        elif command -v claude &> /dev/null; then
+        if command -v claude &> /dev/null; then
             success "AI tool detected: claude"
-        elif command -v cursor &> /dev/null; then
-            success "AI tool detected: cursor"
+        elif command -v gemini &> /dev/null; then
+            success "AI tool detected: gemini"
+        elif command -v codex &> /dev/null; then
+            success "AI tool detected: codex"
+        elif command -v opencode &> /dev/null; then
+            success "AI tool detected: opencode"
         else
-            echo -e "${RED}✗ No AI CLI tool found (amp, claude, cursor)${NC}"
+            echo -e "${RED}✗ No AI CLI tool found (claude, gemini, codex, opencode)${NC}"
             ISSUES=$((ISSUES + 1))
         fi
 
@@ -306,7 +308,7 @@ Run the installer to set up:
 fi
 
 # Detect AI tool (set AI_TOOL env var or auto-detect)
-# Supports: claude, amp, aider, cursor, codex, gemini, cody, continue, opencode
+# Primary: claude, gemini, codex, opencode
 if [[ -n "$AI_TOOL" ]]; then
     AI_CMD="$AI_TOOL"
     if ! command -v "$AI_CMD" &> /dev/null; then
@@ -319,37 +321,23 @@ Either:
     fi
 elif command -v claude &> /dev/null; then
     AI_CMD="claude"
-elif command -v amp &> /dev/null; then
-    AI_CMD="amp"
-elif command -v aider &> /dev/null; then
-    AI_CMD="aider"
-elif command -v cursor &> /dev/null; then
-    AI_CMD="cursor"
-elif command -v codex &> /dev/null; then
-    AI_CMD="codex"
 elif command -v gemini &> /dev/null; then
     AI_CMD="gemini"
-elif command -v cody &> /dev/null; then
-    AI_CMD="cody"
+elif command -v codex &> /dev/null; then
+    AI_CMD="codex"
 elif command -v opencode &> /dev/null; then
     AI_CMD="opencode"
 else
     error "No AI CLI tool found
 
 Supported tools:
-  • claude   - npm i -g @anthropic-ai/claude-code
-  • amp      - npm i -g @anthropic-ai/amp
-  • aider    - pip install aider-chat
-  • cursor   - https://cursor.sh
-  • codex    - OpenAI CLI
-  • gemini   - Google Cloud CLI
-  • cody     - Sourcegraph CLI
-  • opencode - https://opencode.ai
+  • claude   - Anthropic Claude Code
+  • gemini   - Google Gemini CLI
+  • codex    - OpenAI Codex CLI
+  • opencode - OpenCode CLI
 
 Or set AI_TOOL environment variable:
-  AI_TOOL=my-ai-cli ./mothership.sh build
-
-See adapters/ai/README.md for adding custom tools."
+  AI_TOOL=my-ai-cli ./mothership.sh build"
 fi
 
 # Detect if specialized agents are installed
