@@ -67,6 +67,10 @@ verify() {
         database)   ./scripts/check-database.sh 2>/dev/null || result=$? ;;
         integration) ./scripts/check-integrations.sh 2>/dev/null || result=$? ;;
         fullstack|all) ./scripts/verify-all.sh 2>/dev/null || result=$? ;;
+        *)
+            echo -e "${R}Unknown verification type: $t${N}" >&2
+            result=2
+            ;;
     esac
 
     if [[ $result -eq 0 ]]; then

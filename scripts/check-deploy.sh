@@ -96,7 +96,15 @@ echo -e "${BLUE}━━━ 2. Build Freshness ━━━${NC}"
 # Check if build exists and is recent
 if [[ -d ".next" ]]; then
     BUILD_TIME=$(stat -c %Y .next/BUILD_ID 2>/dev/null || stat -f %m .next/BUILD_ID 2>/dev/null || echo 0)
-    SOURCE_TIME=$(find . -name "*.ts" -o -name "*.tsx" | head -100 | xargs stat -c %Y 2>/dev/null | sort -rn | head -1 || echo 0)
+    # Detect stat syntax (GNU vs BSD) and get most recent source file time
+    if stat -c %Y . >/dev/null 2>&1; then
+        # GNU stat
+        SOURCE_TIME=$(find . \( -name "*.ts" -o -name "*.tsx" \) -type f | head -100 | xargs stat -c %Y 2>/dev/null | sort -rn | head -1)
+    else
+        # BSD stat (macOS)
+        SOURCE_TIME=$(find . \( -name "*.ts" -o -name "*.tsx" \) -type f | head -100 | xargs stat -f %m 2>/dev/null | sort -rn | head -1)
+    fi
+    SOURCE_TIME=${SOURCE_TIME:-0}
 
     if [[ $BUILD_TIME -lt $SOURCE_TIME ]]; then
         echo -e "${RED}❌ Build is stale (source files modified after build)${NC}"
