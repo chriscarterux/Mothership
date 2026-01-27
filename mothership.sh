@@ -52,7 +52,17 @@ count_tokens() {
 
 # Validate mode
 case "$MODE" in
-    build|test|plan|review|status|onboard) ;;
+    # Development modes
+    build|test|plan|review) ;;
+
+    # Verification modes
+    quick-check|verify|test-matrix|test-contracts|test-rollback) ;;
+
+    # Infrastructure modes
+    verify-env|health-check|inventory) ;;
+
+    # Utility modes
+    status|onboard) ;;
 
     benchmark)
         echo ""
@@ -221,11 +231,25 @@ case "$MODE" in
     -h|--help|help)
         echo "Usage: ./mothership.sh [mode] [max_iterations]"
         echo ""
-        echo "Modes:"
+        echo "Development Modes:"
         echo "  plan [feature]  Create stories from feature description"
         echo "  build [n]       Build features (default: 10 iterations)"
         echo "  test [n]        Run and fix tests (default: 10 iterations)"
         echo "  review          Review code quality"
+        echo ""
+        echo "Verification Modes:"
+        echo "  quick-check     Fast sanity check (unwired UI, crashed containers)"
+        echo "  verify          Runtime verification that code actually works"
+        echo "  test-matrix     Comprehensive testing (Unit, Integration, API, E2E, Security, A11y)"
+        echo "  test-contracts  API contract testing between frontend/backend"
+        echo "  test-rollback   Verify rollback procedures work"
+        echo ""
+        echo "Infrastructure Modes:"
+        echo "  verify-env      Check env vars, services, certificates"
+        echo "  health-check    Verify all integrations (DB, Stripe, Email, AI)"
+        echo "  inventory       Discover and catalog all APIs, components"
+        echo ""
+        echo "Utility Modes:"
         echo "  status          Report current project state"
         echo "  onboard         Scan project and create codebase.md"
         echo ""
@@ -237,8 +261,14 @@ case "$MODE" in
         echo "Examples:"
         echo "  ./mothership.sh plan \"user authentication\""
         echo "  ./mothership.sh build 20"
+        echo "  ./mothership.sh quick-check"
+        echo "  ./mothership.sh verify-env"
         echo "  ./mothership.sh benchmark"
-        echo "  ./mothership.sh doctor"
+        echo ""
+        echo "Workflow:"
+        echo "  onboard → inventory → plan → build → quick-check → verify →"
+        echo "  test-matrix → test-contracts → test → review →"
+        echo "  verify-env → test-rollback → deploy → health-check"
         echo ""
         echo "Environment:"
         echo "  AI_TOOL    Override AI CLI detection (default: auto-detect)"
@@ -248,8 +278,12 @@ case "$MODE" in
     *)
         error "Unknown mode: '$MODE'
 
-Available modes: plan, build, test, review, status, onboard
-Run './mothership.sh --help' for usage"
+Development:    plan, build, test, review
+Verification:   quick-check, verify, test-matrix, test-contracts, test-rollback
+Infrastructure: verify-env, health-check, inventory
+Utility:        status, onboard
+
+Run './mothership.sh --help' for full usage"
         ;;
 esac
 
@@ -330,10 +364,25 @@ fi
 # BUILD-COMPLETE = no more stories to build (stop looping)
 # BUILT:* = one story done (continue to next iteration)
 case "$MODE" in
-    build)  COMPLETE_SIGNALS="BUILD-COMPLETE" ;;
-    test)   COMPLETE_SIGNALS="TEST-COMPLETE" ;;
+    # Development modes
+    build)   COMPLETE_SIGNALS="BUILD-COMPLETE" ;;
+    test)    COMPLETE_SIGNALS="TEST-COMPLETE" ;;
     plan)    COMPLETE_SIGNALS="PLANNED:[0-9]+|PLANNED"; MAX_ITERATIONS=1 ;;
     review)  COMPLETE_SIGNALS="APPROVED|NEEDS-WORK"; MAX_ITERATIONS=1 ;;
+
+    # Verification modes (one-shot, stop on pass OR fail)
+    quick-check)    COMPLETE_SIGNALS="QUICK-CHECK:pass|QUICK-CHECK:fail"; MAX_ITERATIONS=1 ;;
+    verify)         COMPLETE_SIGNALS="VERIFIED|UNWIRED"; MAX_ITERATIONS=1 ;;
+    test-matrix)    COMPLETE_SIGNALS="MATRIX-PASS|MATRIX-FAIL"; MAX_ITERATIONS=1 ;;
+    test-contracts) COMPLETE_SIGNALS="CONTRACTS-VALID|CONTRACTS-VIOLATED|BREAKING-CHANGES"; MAX_ITERATIONS=1 ;;
+    test-rollback)  COMPLETE_SIGNALS="ROLLBACK-VERIFIED|ROLLBACK-FAILED"; MAX_ITERATIONS=1 ;;
+
+    # Infrastructure modes (one-shot)
+    verify-env)   COMPLETE_SIGNALS="ENV-VERIFIED|ENV-FAILED"; MAX_ITERATIONS=1 ;;
+    health-check) COMPLETE_SIGNALS="HEALTHY|UNHEALTHY"; MAX_ITERATIONS=1 ;;
+    inventory)    COMPLETE_SIGNALS="INVENTORY-COMPLETE"; MAX_ITERATIONS=1 ;;
+
+    # Utility modes
     status)  COMPLETE_SIGNALS="STATUS-COMPLETE"; MAX_ITERATIONS=1 ;;
     onboard) COMPLETE_SIGNALS="ONBOARD-COMPLETE"; MAX_ITERATIONS=1 ;;
 esac
@@ -389,7 +438,11 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
     # Check for completion signals (must be in proper <agent>SIGNAL</agent> format)
     # BUILD-COMPLETE means no more stories - stop the loop
     # BUILT:ID means one story done - continue to next iteration
-    if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel)>($COMPLETE_SIGNALS)</"; then
+    # Agent names: mothership (unified), vector (build), cortex (test), cipher (plan),
+    #              sentinel (review/env), atomic (verify), sanity (quick-check),
+    #              nexus (test-matrix/contracts), phoenix (rollback), scanner (inventory),
+    #              pulse (health-check)
+    if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel|atomic|sanity|nexus|phoenix|scanner|pulse)>($COMPLETE_SIGNALS)</"; then
         echo ""
         success "Mothership Core complete! Finished at iteration $i."
         echo "$(date '+%Y-%m-%d %H:%M:%S') - Completed at iteration $i" >> .mothership/progress.md
@@ -397,7 +450,7 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
     fi
     
     # Check for blocked signal (must use proper tag format like other signals)
-    if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel)>(BLOCKED|X:[^<]+)</(mothership|vector|cortex|cipher|sentinel)>"; then
+    if echo "$OUTPUT" | grep -qE "<(mothership|vector|cortex|cipher|sentinel|atomic|sanity|nexus|phoenix|scanner|pulse)>(BLOCKED|X:[^<]+)</(mothership|vector|cortex|cipher|sentinel|atomic|sanity|nexus|phoenix|scanner|pulse)>"; then
         echo ""
         warn "Agent reported BLOCKED. Check output above for details."
         echo "$(date '+%Y-%m-%d %H:%M:%S') - Blocked at iteration $i" >> .mothership/progress.md
