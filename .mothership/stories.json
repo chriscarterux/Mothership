@@ -1,0 +1,189 @@
+{
+  "project": "Premium Website Redesign",
+  "branch": "feat/premium-website-redesign",
+  "stories": [
+    {
+      "id": "WEB-001",
+      "title": "Add animated galaxy canvas background with shooting stars",
+      "status": "done",
+      "priority": 1,
+      "ac": [
+        "Canvas element renders behind all content",
+        "Stars rotate slowly around center point with flicker/glow effect",
+        "Shooting stars appear randomly (1-2% chance per frame)",
+        "Shooting stars have gradient trail that fades",
+        "Performance: 60fps on modern devices",
+        "Canvas resizes on window resize",
+        "Stars have varying sizes and opacity for depth"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Use pure Canvas API, no libraries. Inspired by GROK starfield. Stars use polar coordinates for circular motion."
+    },
+    {
+      "id": "WEB-002",
+      "title": "Implement Framer-style entrance animations with spring physics",
+      "status": "ready",
+      "priority": 2,
+      "ac": [
+        "Hero elements animate in with staggered delays (badge, h1, subtitle, buttons, code)",
+        "Use CSS spring-like cubic-bezier easing (0.16, 1, 0.3, 1)",
+        "Elements animate from opacity 0, translateY 60px",
+        "Stagger delay: 100ms between elements",
+        "Animation duration: 1s per element",
+        "Animation only triggers once on page load"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Framer uses spring physics. CSS approximation: cubic-bezier(0.16, 1, 0.3, 1) for overshoot effect"
+    },
+    {
+      "id": "WEB-003",
+      "title": "Add scroll-triggered reveal animations with IntersectionObserver",
+      "status": "ready",
+      "priority": 3,
+      "ac": [
+        "Workflow cards animate in with staggered delays (100ms each)",
+        "Feature cards animate with 50ms stagger",
+        "Benchmark section slides in from bottom",
+        "CTA section has subtle scale-up animation",
+        "Use IntersectionObserver with 10% threshold",
+        "rootMargin: -100px to trigger slightly before visible",
+        "Elements only animate once (no re-animation on scroll up)"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Existing reveal class can be enhanced. Add data-delay attribute for stagger control."
+    },
+    {
+      "id": "WEB-004",
+      "title": "Redesign hero section with premium typography and layout",
+      "status": "ready",
+      "priority": 4,
+      "ac": [
+        "Increase hero h1 to clamp(3.5rem, 10vw, 7rem)",
+        "Add gradient text effect on accent word (ships code)",
+        "Update badge with animated border gradient",
+        "Add subtle parallax effect on hero content (moves slower than scroll)",
+        "Improve hero-code block with syntax highlighting colors",
+        "Add copy-to-clipboard tooltip feedback"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Reference Awwwards typography: large headlines (170px), tight letter-spacing (-0.03em)"
+    },
+    {
+      "id": "WEB-005",
+      "title": "Add micro-interactions and hover states throughout",
+      "status": "ready",
+      "priority": 5,
+      "ac": [
+        "Navigation links have underline slide-in animation on hover",
+        "Buttons have subtle scale (1.02) and glow on hover",
+        "Workflow cards have 3D tilt effect on hover (perspective)",
+        "Feature cards have border gradient reveal on hover",
+        "Terminal has typing cursor animation",
+        "Logo has subtle rotation on hover",
+        "All transitions use cubic-bezier(0.4, 0, 0.2, 1)"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Keep interactions subtle and professional. Don't overdo it."
+    },
+    {
+      "id": "WEB-006",
+      "title": "Implement smooth scroll and section transitions",
+      "status": "ready",
+      "priority": 6,
+      "ac": [
+        "Smooth scroll to anchors with offset for fixed header",
+        "Active nav link highlights based on scroll position",
+        "Section dividers have animated gradient lines",
+        "Page has subtle fade-in on load (prevent FOUC)",
+        "Scroll progress indicator in nav or as fixed element"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Use scroll-behavior: smooth and IntersectionObserver for active states"
+    },
+    {
+      "id": "WEB-007",
+      "title": "Enhance color palette with vibrant gradients",
+      "status": "ready",
+      "priority": 7,
+      "ac": [
+        "Update --accent to vibrant blue-purple gradient",
+        "Add animated gradient orbs in background (beyond static glow)",
+        "CTA section has animated gradient border",
+        "Workflow icons have gradient backgrounds matching their colors",
+        "Add subtle noise texture overlay for depth",
+        "Gradient animations use CSS hue-rotate or position shift"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Awwwards palette: purples (#502BD8), accent oranges (#FA5D29), greens (#AAEEC4)"
+    },
+    {
+      "id": "WEB-008",
+      "title": "Add responsive mobile menu with animations",
+      "status": "ready",
+      "priority": 8,
+      "ac": [
+        "Hamburger menu icon animates to X on open",
+        "Menu slides in from right or fades in with backdrop blur",
+        "Menu links stagger animate in",
+        "Body scroll locks when menu is open",
+        "Menu closes on link click or outside click",
+        "Transition duration: 400ms"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Current mobile menu button exists but has no functionality"
+    },
+    {
+      "id": "WEB-009",
+      "title": "Polish terminal animation with realistic typing effect",
+      "status": "ready",
+      "priority": 9,
+      "ac": [
+        "Terminal lines type out character by character",
+        "Typing speed: ~50ms per character",
+        "Blinking cursor follows typing position",
+        "Lines appear sequentially (wait for previous to finish)",
+        "Terminal activates when scrolled into view",
+        "Add subtle screen flicker/scan-line effect (optional)"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Creates engagement and draws attention to the benchmark stats"
+    },
+    {
+      "id": "WEB-010",
+      "title": "Final polish and performance optimization",
+      "status": "ready",
+      "priority": 10,
+      "ac": [
+        "All animations respect prefers-reduced-motion",
+        "Canvas animation pauses when tab not visible",
+        "Lazy load any heavy assets",
+        "Test on mobile devices for performance",
+        "Ensure accessibility: focus states, keyboard navigation",
+        "Add meta tags for social sharing (og:image, etc.)",
+        "Lighthouse score: Performance 90+, Accessibility 100"
+      ],
+      "files": [
+        "docs/index.html"
+      ],
+      "notes": "Professional polish pass. Ship it."
+    }
+  ]
+}
