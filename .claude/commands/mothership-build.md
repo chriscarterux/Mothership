@@ -67,6 +67,81 @@ npm run lint
 npm test -- --grep "feature-name"
 ```
 
+## Wiring Validation (CRITICAL)
+
+Before signaling complete, verify nothing is left unwired:
+
+### For UI Changes
+```bash
+# Check for empty/undefined handlers
+grep -rn "onClick={}" src/components/ && echo "FAIL: Empty onClick"
+grep -rn "onSubmit={}" src/components/ && echo "FAIL: Empty onSubmit"
+grep -rn "={() => {}}" src/ && echo "FAIL: Empty arrow function"
+grep -rn "={undefined}" src/ && echo "FAIL: Undefined handler"
+
+# Check handlers actually do something
+# Review each new handler - does it call an API, update state, navigate?
+```
+
+### For API Changes
+```bash
+# Start server and test endpoint
+npm run dev &
+sleep 5
+curl -s http://localhost:3000/api/[endpoint] | jq .
+pkill -f "npm run dev"
+```
+
+### For Docker Changes
+```bash
+# Build and run container
+docker build -t test-build .
+docker run -d --name test-run test-build
+sleep 10
+docker ps | grep test-run  # Should show "Up"
+docker logs test-run 2>&1 | tail -20
+docker stop test-run && docker rm test-run
+```
+
+### For Database Changes
+```bash
+# Run migration
+npm run migrate
+
+# Verify schema
+npm run db:verify  # or check tables manually
+```
+
+## Wiring Checklist
+
+Before marking complete, verify:
+
+```markdown
+### UI Stories
+- [ ] All buttons have onClick that calls a real function
+- [ ] All forms have onSubmit that prevents default + does something
+- [ ] All inputs have onChange that updates state
+- [ ] Component actually renders on a page (not just exported)
+- [ ] Navigation actually works (Link/router.push)
+
+### API Stories
+- [ ] Route file exists and is registered
+- [ ] Endpoint responds (not 404/500)
+- [ ] Database calls execute (not just defined)
+- [ ] Auth middleware applied where needed
+
+### Docker Stories
+- [ ] Image builds without error
+- [ ] Container starts and stays running
+- [ ] Health check passes
+- [ ] Logs show expected startup
+
+### Database Stories
+- [ ] Migration runs forward
+- [ ] Schema changes applied
+- [ ] Rollback works
+```
+
 ## Signals
 
 **Story complete:**

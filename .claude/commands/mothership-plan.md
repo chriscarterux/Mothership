@@ -75,6 +75,56 @@ Every criterion must be:
 - **Specific** - No ambiguity
 - **Testable** - Can verify pass/fail
 - **Complete** - Includes edge cases
+- **Verifiable** - Includes HOW to verify (command, action, check)
+
+### Atomic AC Format
+
+Each AC must specify WHAT happens and HOW to verify:
+
+```markdown
+- [ ] [What happens]
+  - Verify: [Specific verification step]
+```
+
+### Examples by Story Type
+
+**UI Stories:**
+```markdown
+- [ ] Submit button calls API on click
+  - Verify: Click button, see network request in DevTools
+
+- [ ] Error message appears below invalid email
+  - Verify: Type "bad", blur field, see "Invalid email" text
+
+- [ ] Form clears after successful submit
+  - Verify: Submit valid data, all inputs should be empty
+```
+
+**API Stories:**
+```markdown
+- [ ] POST /api/users returns 201 with user object
+  - Verify: curl -X POST /api/users -d '{"email":"test@x.com"}' shows 201
+
+- [ ] Invalid email returns 400 with error message
+  - Verify: curl with bad email returns {"error": "Invalid email"}
+```
+
+**Docker Stories:**
+```markdown
+- [ ] Container stays running after start
+  - Verify: docker ps shows status "Up" after 30 seconds
+
+- [ ] Health endpoint returns 200
+  - Verify: curl localhost:3000/health returns {"status":"ok"}
+```
+
+### Anti-Patterns to Reject
+
+| Bad AC | Why It's Bad | Better AC |
+|--------|--------------|-----------|
+| "Button works" | Works how? | "Button click calls submitForm() and disables" |
+| "Form validates" | When? How shown? | "Empty email shows 'Required' on blur" |
+| "API handles errors" | Which errors? | "Missing auth returns 401 with {error:...}" |
 
 ✓ "Error message shows when email is invalid"
 ✓ "Page loads in under 2 seconds"
@@ -83,6 +133,20 @@ Every criterion must be:
 ✗ "Works well"
 ✗ "Good UX"
 ✗ "Fast"
+
+## Required Test Coverage
+
+Each story MUST specify which test layers apply:
+
+```markdown
+## Test Requirements
+- [ ] Unit: [functions to test]
+- [ ] Integration: [components/services to test together]
+- [ ] API: [endpoints to test] (if applicable)
+- [ ] E2E: [user flow to test] (if applicable)
+- [ ] Security: [checks needed]
+- [ ] A11y: [accessibility requirements] (if UI)
+```
 
 ## Example
 
