@@ -75,10 +75,51 @@ else
     echo -e "${YELLOW}⚠️  No email service configured${NC}"
 fi
 
-# 3. AI/LLM (Anthropic, OpenAI)
+# 3. AI/LLM Service (Cloud or Local)
 echo ""
 echo "3. AI/LLM Service..."
-if [[ -n "$ANTHROPIC_API_KEY" ]]; then
+
+# Check for local AI (Ollama) first
+if [[ "$USE_LOCAL_AI" == "true" ]] || [[ -n "$OLLAMA_URL" ]]; then
+    OLLAMA_HOST="${OLLAMA_URL:-http://localhost:11434}"
+
+    # Test 1: Is Ollama running?
+    if curl -s --max-time 5 "$OLLAMA_HOST/api/tags" > /dev/null 2>&1; then
+        echo -e "${GREEN}✓ Ollama running at $OLLAMA_HOST${NC}"
+
+        # Test 2: Is the configured model available?
+        if [[ -n "$OLLAMA_MODEL" ]]; then
+            if curl -s --max-time 5 "$OLLAMA_HOST/api/tags" | grep -q "\"$OLLAMA_MODEL\""; then
+                echo -e "${GREEN}✓ Model '$OLLAMA_MODEL' available${NC}"
+            else
+                echo -e "${RED}❌ Model '$OLLAMA_MODEL' not found in Ollama${NC}"
+                echo "   Run: ollama pull $OLLAMA_MODEL"
+                ISSUES=$((ISSUES + 1))
+            fi
+        fi
+
+        # Test 3: Docker network reachability (critical for containerized apps)
+        if command -v docker &> /dev/null && docker ps --format '{{.Names}}' | grep -q .; then
+            echo -n "Testing Ollama from Docker network... "
+            # Check if Ollama is bound to localhost only (common mistake)
+            if ss -tlnp 2>/dev/null | grep ":11434" | grep -q "127.0.0.1"; then
+                echo -e "${RED}❌ Ollama bound to localhost only${NC}"
+                echo "   Containers cannot reach it. Fix with:"
+                echo "   Environment=OLLAMA_HOST=0.0.0.0"
+                ISSUES=$((ISSUES + 1))
+            elif ss -tlnp 2>/dev/null | grep ":11434" | grep -q "\*:"; then
+                echo -e "${GREEN}✓ Ollama accessible from containers${NC}"
+            else
+                echo -e "${YELLOW}⚠️  Could not verify Ollama binding${NC}"
+            fi
+        fi
+    else
+        echo -e "${RED}❌ Ollama not reachable at $OLLAMA_HOST${NC}"
+        echo "   Is Ollama running? Try: ollama serve"
+        ISSUES=$((ISSUES + 1))
+    fi
+    TESTED=$((TESTED + 1))
+elif [[ -n "$ANTHROPIC_API_KEY" ]]; then
     test_integration "Anthropic/Claude API" \
         "curl -s -H 'x-api-key: $ANTHROPIC_API_KEY' -H 'anthropic-version: 2023-06-01' https://api.anthropic.com/v1/messages -d '{}' 2>&1 | grep -q 'error\|messages'"
 elif [[ -n "$OPENAI_API_KEY" ]]; then

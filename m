@@ -81,7 +81,7 @@ verify() {
 AI_MODES="plan build test review status inventory"
 
 # Verification modes (can run without AI)
-VERIFY_MODES="quick-check verify test-matrix test-contracts test-rollback verify-env health-check"
+VERIFY_MODES="quick-check verify test-matrix test-contracts test-rollback verify-env health-check pre-deploy"
 
 # Main dispatch
 case "$MODE" in
@@ -191,6 +191,17 @@ case "$MODE" in
             # Remove trailing comma
             UNHEALTHY="${UNHEALTHY%,}"
             echo -e "<pulse>UNHEALTHY:$UNHEALTHY</pulse>"
+            exit 1
+        fi
+        ;;
+
+    pre-deploy|deploy-check)
+        echo -e "${B}Pre-Deploy Verification (mothership)${N}"
+        ENV_FILE="${TYPE:-.env}"
+        if ./scripts/check-deploy.sh "$ENV_FILE"; then
+            echo -e "<mothership>DEPLOY-READY</mothership>"
+        else
+            echo -e "<mothership>DEPLOY-BLOCKED</mothership>"
             exit 1
         fi
         ;;
