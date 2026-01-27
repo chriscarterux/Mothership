@@ -199,6 +199,52 @@
             background: var(--text-bright) !important;
         }
 
+        /* Focus States - Accessibility */
+        :focus {
+            outline: none;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        a:focus-visible,
+        button:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .btn:focus-visible {
+            outline-offset: 3px;
+            box-shadow: 0 0 0 4px var(--accent-glow);
+        }
+
+        .nav-cta:focus-visible {
+            outline-color: var(--bg);
+            outline-offset: 3px;
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 12px 24px;
+            background: var(--accent);
+            color: var(--bg);
+            font-weight: 600;
+            border-radius: 8px;
+            z-index: 1000;
+            transition: top 0.2s ease;
+        }
+
+        .skip-link:focus {
+            top: 12px;
+        }
+
         /* Hero */
         .hero {
             min-height: 100vh;
@@ -766,6 +812,8 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: transparent;
             border: 1px solid transparent;
+            font-family: inherit;
+            color: inherit;
         }
 
         .demo-step:hover {
@@ -1132,28 +1180,31 @@
     </style>
 </head>
 <body>
+    <!-- Skip to content link for keyboard users -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
     <!-- Galaxy starfield canvas -->
-    <canvas id="starfield"></canvas>
+    <canvas id="starfield" aria-hidden="true"></canvas>
 
-    <div class="glow-bg"></div>
-    <div class="glow-orb glow-orb-1"></div>
-    <div class="glow-orb glow-orb-2"></div>
+    <div class="glow-bg" aria-hidden="true"></div>
+    <div class="glow-orb glow-orb-1" aria-hidden="true"></div>
+    <div class="glow-orb glow-orb-2" aria-hidden="true"></div>
 
-    <nav>
+    <nav aria-label="Main navigation">
         <div class="nav-inner">
-            <a href="#" class="logo">
-                <img src="./images/logo.png" alt="Mothership" class="logo-mark">
+            <a href="#" class="logo" aria-label="Mothership - Home">
+                <img src="./images/logo.png" alt="" class="logo-mark" aria-hidden="true">
                 Mothership
             </a>
-            <ul class="nav-links">
+            <ul class="nav-links" role="list">
                 <li><a href="#workflow">Workflow</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="#benchmark">Benchmark</a></li>
                 <li><a href="#demo">Demo</a></li>
-                <li><a href="https://github.com/chriscarterux/Mothership" class="nav-cta">GitHub</a></li>
+                <li><a href="https://github.com/chriscarterux/Mothership" class="nav-cta" aria-label="View on GitHub">GitHub</a></li>
             </ul>
-            <button class="mobile-menu-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <button class="mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -1162,14 +1213,14 @@
         </div>
     </nav>
 
-    <main>
-        <section class="hero">
+    <main id="main-content">
+        <section class="hero" aria-labelledby="hero-title">
             <div class="container">
                 <div class="hero-badge">
                     <span class="hero-badge-dot"></span>
                     Open Source
                 </div>
-                <h1>The <span class="serif">autonomous</span> loop<br>that <span class="accent">ships code</span></h1>
+                <h1 id="hero-title">The <span class="serif">autonomous</span> loop<br>that <span class="accent">ships code</span></h1>
                 <p class="hero-subtitle">
                     Mothership wraps any AI CLI in a loop that plans, builds, tests, and reviews. One story per iteration. Fresh context each time.
                 </p>
@@ -1182,9 +1233,9 @@
                     </a>
                     <a href="#demo" class="btn btn-secondary">View Demo</a>
                 </div>
-                <div class="hero-code" onclick="navigator.clipboard.writeText('./m build')">
-                    <span class="prompt">$</span> <span class="cmd">./m build</span>
-                </div>
+                <button class="hero-code" onclick="navigator.clipboard.writeText('./m build')" aria-label="Copy command: ./m build">
+                    <span class="prompt" aria-hidden="true">$</span> <span class="cmd">./m build</span>
+                </button>
             </div>
         </section>
 
@@ -1329,16 +1380,16 @@
             </div>
         </section>
 
-        <section class="demo-section section" id="demo">
+        <section class="demo-section section" id="demo" aria-labelledby="demo-title">
             <div class="container">
                 <div class="section-header reveal">
                     <span class="section-label">Interactive Demo</span>
-                    <h2 class="section-title">See the <span class="serif">loop</span> in action</h2>
+                    <h2 class="section-title" id="demo-title">See the <span class="serif">loop</span> in action</h2>
                     <p class="section-desc">Click any phase to explore how agents work together.</p>
                 </div>
 
-                <div class="demo-flowchart reveal">
-                    <div class="demo-step" data-step="plan">
+                <div class="demo-flowchart reveal" role="group" aria-label="Development workflow phases">
+                    <button class="demo-step" data-step="plan" aria-pressed="false" aria-label="Plan phase - Cipher agent">
                         <div class="demo-step-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
@@ -1349,9 +1400,9 @@
                         </div>
                         <div class="demo-step-label">Plan</div>
                         <div class="demo-step-agent">Cipher</div>
-                    </div>
-                    <div class="demo-connector"></div>
-                    <div class="demo-step" data-step="build">
+                    </button>
+                    <div class="demo-connector" aria-hidden="true"></div>
+                    <button class="demo-step" data-step="build" aria-pressed="false" aria-label="Build phase - Vector agent">
                         <div class="demo-step-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="4 17 10 11 4 5"/>
@@ -1360,9 +1411,9 @@
                         </div>
                         <div class="demo-step-label">Build</div>
                         <div class="demo-step-agent">Vector</div>
-                    </div>
-                    <div class="demo-connector"></div>
-                    <div class="demo-step" data-step="test">
+                    </button>
+                    <div class="demo-connector" aria-hidden="true"></div>
+                    <button class="demo-step" data-step="test" aria-pressed="false" aria-label="Test phase - Cortex agent">
                         <div class="demo-step-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/>
@@ -1372,9 +1423,9 @@
                         </div>
                         <div class="demo-step-label">Test</div>
                         <div class="demo-step-agent">Cortex</div>
-                    </div>
-                    <div class="demo-connector"></div>
-                    <div class="demo-step" data-step="review">
+                    </button>
+                    <div class="demo-connector" aria-hidden="true"></div>
+                    <button class="demo-step" data-step="review" aria-pressed="false" aria-label="Review phase - Sentinel agent">
                         <div class="demo-step-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>
@@ -1383,14 +1434,14 @@
                         </div>
                         <div class="demo-step-label">Review</div>
                         <div class="demo-step-agent">Sentinel</div>
-                    </div>
+                    </button>
                 </div>
 
-                <div class="demo-details-panel reveal" id="demoPanel">
+                <div class="demo-details-panel reveal" id="demoPanel" role="region" aria-label="Phase details" aria-live="polite">
                     <div class="demo-panel-header">
-                        <div class="demo-panel-icon" id="demoPanelIcon"></div>
+                        <div class="demo-panel-icon" id="demoPanelIcon" aria-hidden="true"></div>
                         <span class="demo-panel-title" id="demoPanelTitle">Select a Phase</span>
-                        <button class="demo-panel-close" id="demoPanelClose">&times;</button>
+                        <button class="demo-panel-close" id="demoPanelClose" aria-label="Close details panel">&times;</button>
                     </div>
                     <div class="demo-panel-content">
                         <div class="demo-detail-section">
@@ -1772,8 +1823,13 @@
 
         function selectDemoStep(key) {
             const data = demoStepData[key];
-            document.querySelectorAll('.demo-step').forEach(s => s.classList.remove('active'));
-            document.querySelector(`.demo-step[data-step="${key}"]`).classList.add('active');
+            document.querySelectorAll('.demo-step').forEach(s => {
+                s.classList.remove('active');
+                s.setAttribute('aria-pressed', 'false');
+            });
+            const activeStep = document.querySelector(`.demo-step[data-step="${key}"]`);
+            activeStep.classList.add('active');
+            activeStep.setAttribute('aria-pressed', 'true');
             document.getElementById('demoPanel').classList.add('active');
             document.getElementById('demoPanelIcon').innerHTML = demoIcons[key];
             document.getElementById('demoPanelTitle').innerHTML = data.title;
@@ -1794,7 +1850,10 @@
         });
 
         document.getElementById('demoPanelClose').addEventListener('click', () => {
-            document.querySelectorAll('.demo-step').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.demo-step').forEach(s => {
+                s.classList.remove('active');
+                s.setAttribute('aria-pressed', 'false');
+            });
             document.getElementById('demoPanel').classList.remove('active');
         });
 
