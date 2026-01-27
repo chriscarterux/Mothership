@@ -210,6 +210,8 @@ if [[ -n "$OLLAMA_URL" ]]; then
         # Check binding for Docker access (use lsof for macOS portability)
         OLLAMA_PORT="${OLLAMA_URL##*:}"
         OLLAMA_PORT="${OLLAMA_PORT%%/*}"
+        # Default to 11434 if no port found (Ollama default)
+        [[ ! "$OLLAMA_PORT" =~ ^[0-9]+$ ]] && OLLAMA_PORT=11434
         if lsof -iTCP:"$OLLAMA_PORT" -sTCP:LISTEN 2>/dev/null | grep -q "127.0.0.1\|localhost"; then
             echo -e "${RED}❌ Ollama only on localhost - containers can't reach it${NC}"
             echo "   Set OLLAMA_HOST=0.0.0.0 in Ollama config"
