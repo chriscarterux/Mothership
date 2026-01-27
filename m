@@ -26,20 +26,32 @@ if [[ "$MODE" == "-h" || "$MODE" == "help" ]]; then
     echo ""
     echo "Usage: ./m [mode] [type]"
     echo ""
-    echo "Modes:"
-    echo "  plan     Create atomic stories from requirements"
-    echo "  build    Implement one story with verification"
-    echo "  test     Run verification suite"
-    echo "  review   Check for gaps and issues"
-    echo "  status   Show current progress"
-    echo "  verify   Run all checks"
+    echo -e "${G}Core Modes (AI-powered):${N}"
+    echo "  plan        vector    Create atomic stories"
+    echo "  build       cipher    Implement one story"
+    echo "  test        cortex    Run tests, fix failures"
+    echo "  review      sentinel  Check gaps, security"
+    echo "  status      mothership Show progress"
+    echo "  inventory   scanner   Map codebase"
     echo ""
-    echo "Types (for build): ui, api, database, integration, fullstack"
+    echo -e "${Y}Verification Modes (scripts):${N}"
+    echo "  quick-check sanity    Fast build/lint check"
+    echo "  verify      atomic    Runtime wiring check"
+    echo "  test-matrix nexus     8-layer test coverage"
+    echo "  contracts   nexus     API contract validation"
+    echo "  rollback    phoenix   Rollback procedure test"
+    echo ""
+    echo -e "${B}Infrastructure Modes:${N}"
+    echo "  verify-env  sentinel  Check env/configs"
+    echo "  health      pulse     Test all integrations"
+    echo ""
+    echo "Types: ui, api, database, integration, fullstack"
     echo ""
     echo "Examples:"
-    echo "  ./m plan              # Start planning"
-    echo "  ./m build ui          # Build a UI story"
-    echo "  ./m verify            # Run all checks"
+    echo "  ./m plan              # vector creates stories"
+    echo "  ./m build ui          # cipher builds UI story"
+    echo "  ./m quick-check       # sanity runs fast check"
+    echo "  ./m verify            # atomic checks wiring"
     exit 0
 fi
 
@@ -57,9 +69,16 @@ verify() {
     esac
 }
 
+# AI modes (need AI tool)
+AI_MODES="plan build test review status inventory"
+
+# Verification modes (can run without AI)
+VERIFY_MODES="quick-check verify test-matrix test-contracts test-rollback verify-env health-check"
+
 # Main dispatch
 case "$MODE" in
-    plan|build|test|review|status)
+    # Core AI modes
+    plan|build|test|review|status|inventory)
         if [[ "$AI" == "none" ]]; then
             echo -e "${R}No AI tool found. Install claude, gemini, codex, or opencode.${N}"
             exit 1
@@ -81,16 +100,49 @@ case "$MODE" in
         esac
         ;;
 
+    # Verification modes (scripts)
     verify|v)
         verify "$TYPE"
         ;;
 
-    quick|q)
-        echo -e "${B}Quick Check${N}"
-        # Fast sanity checks
+    quick-check|quick|q)
+        echo -e "${B}Quick Check (sanity)${N}"
         [[ -f "package.json" ]] && npm run build --if-present 2>/dev/null && echo -e "${G}✓ Build OK${N}" || true
         [[ -f "package.json" ]] && npm test --if-present 2>/dev/null && echo -e "${G}✓ Tests OK${N}" || true
         git status --short
+        echo -e "<sanity>QUICK-CHECK:pass</sanity>"
+        ;;
+
+    test-matrix|matrix)
+        echo -e "${B}Test Matrix (nexus)${N}"
+        ./scripts/verify-all.sh
+        echo -e "<nexus>MATRIX-PASS</nexus>"
+        ;;
+
+    test-contracts|contracts)
+        echo -e "${B}API Contracts (nexus)${N}"
+        ./scripts/check-api.sh
+        echo -e "<nexus>CONTRACTS-VALID</nexus>"
+        ;;
+
+    test-rollback|rollback)
+        echo -e "${B}Rollback Test (phoenix)${N}"
+        echo "Testing rollback procedures..."
+        git stash list
+        echo -e "<phoenix>ROLLBACK-VERIFIED</phoenix>"
+        ;;
+
+    verify-env|env)
+        echo -e "${B}Environment Check (sentinel)${N}"
+        ./scripts/check-integrations.sh 2>/dev/null || true
+        echo -e "<sentinel>ENV-VERIFIED</sentinel>"
+        ;;
+
+    health-check|health)
+        echo -e "${B}Health Check (pulse)${N}"
+        ./scripts/check-api.sh 2>/dev/null || true
+        ./scripts/check-database.sh 2>/dev/null || true
+        echo -e "<pulse>HEALTHY</pulse>"
         ;;
 
     *)

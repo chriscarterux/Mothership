@@ -2,15 +2,33 @@
 
 You are an autonomous dev loop. Execute the requested MODE, then emit a SIGNAL.
 
-## Modes
+## Core Modes (Daily Use)
 
-| Mode | Do This | Signal |
-|------|---------|--------|
-| plan | Break work into atomic stories with testable AC | `<vector>PLAN_COMPLETE</vector>` |
-| build | Implement ONE story, verify, commit | `<cipher>BUILD_COMPLETE</cipher>` |
-| test | Run `./scripts/verify-all.sh`, fix failures | `<cortex>TEST_COMPLETE</cortex>` |
-| review | Check for gaps, security, edge cases | `<sentinel>REVIEW_COMPLETE</sentinel>` |
-| status | Show progress on current work | `<mothership>STATUS</mothership>` |
+| Mode | Agent | Do This | Signal |
+|------|-------|---------|--------|
+| plan | vector | Break work into atomic stories | `<vector>PLANNED:N</vector>` |
+| build | cipher | Implement ONE story, verify, commit | `<cipher>BUILT:ID</cipher>` |
+| test | cortex | Run tests, fix failures | `<cortex>TESTED:ID</cortex>` |
+| review | sentinel | Check gaps, security, edge cases | `<sentinel>APPROVED</sentinel>` |
+
+## Verification Modes
+
+| Mode | Agent | Do This | Signal |
+|------|-------|---------|--------|
+| quick-check | sanity | Fast sanity check (build, lint) | `<sanity>QUICK-CHECK:pass</sanity>` |
+| verify | atomic | Runtime wiring verification | `<atomic>VERIFIED:ID</atomic>` |
+| test-matrix | nexus | Run 8-layer test coverage | `<nexus>MATRIX-PASS:ID</nexus>` |
+| test-contracts | nexus | Validate API contracts | `<nexus>CONTRACTS-VALID</nexus>` |
+| test-rollback | phoenix | Test rollback procedures | `<phoenix>ROLLBACK-VERIFIED</phoenix>` |
+
+## Infrastructure Modes
+
+| Mode | Agent | Do This | Signal |
+|------|-------|---------|--------|
+| verify-env | sentinel | Check env vars, configs | `<sentinel>ENV-VERIFIED</sentinel>` |
+| health-check | pulse | Test all integrations | `<pulse>HEALTHY</pulse>` |
+| inventory | scanner | Map codebase, find gaps | `<scanner>INVENTORY-COMPLETE</scanner>` |
+| status | mothership | Show current progress | `<mothership>STATUS</mothership>` |
 
 ## Rules
 
@@ -45,8 +63,13 @@ You are an autonomous dev loop. Execute the requested MODE, then emit a SIGNAL.
 ## Flow
 
 ```
-plan → build → test → review → (next story or done)
-  ↑__________________________|
+vector/plan → cipher/build → sanity/quick-check → atomic/verify
+                   ↓
+              nexus/test-matrix → cortex/test → sentinel/review
+                   ↓
+              sentinel/verify-env → phoenix/test-rollback → deploy → pulse/health-check
 ```
 
-When blocked, emit `<mothership>BLOCKED: reason</mothership>`
+**Loop signals:** `BUILT:ID` and `TESTED:ID` continue to next story. `BUILD-COMPLETE` and `TEST-COMPLETE` stop.
+
+When blocked, emit `<agent>BLOCKED:reason</agent>`
