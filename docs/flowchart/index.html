@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mothership - Interactive Demo</title>
     <meta name="description" content="Interactive demo of the Mothership autonomous AI development loop. See how agents plan, build, test, and review your code.">
+    <link rel="icon" type="image/png" href="../images/logo.png">
+    <meta property="og:title" content="Mothership - Interactive Demo">
+    <meta property="og:description" content="Interactive demo of the Mothership autonomous AI development loop.">
+    <meta property="og:image" content="https://chriscarterux.github.io/Mothership/images/logo.png">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://chriscarterux.github.io/Mothership/images/logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -156,14 +163,7 @@
         .logo-mark {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, var(--accent) 0%, rgba(139, 92, 246, 0.8) 100%);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--bg);
+            object-fit: contain;
         }
 
         .nav-links {
@@ -731,7 +731,7 @@
     <nav>
         <div class="nav-inner">
             <a href="../" class="logo">
-                <span class="logo-mark">M</span>
+                <img src="../images/logo.png" alt="Mothership" class="logo-mark">
                 Mothership
             </a>
             <ul class="nav-links">
