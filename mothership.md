@@ -41,9 +41,11 @@ Read first: `.mothership/checkpoint.md`, `.mothership/codebase.md`
 
 **Checkpoint:** `phase | project | branch | story`
 
-**Backend** (`.mothership/config.json`): `"state": "linear"` or `"state": "local"`
+**Backend** (`.mothership/config.json`): `"state": "trello"` or `"state": "linear"` or `"state": "local"`
 
-Local uses `.mothership/stories.json`: `{project, branch, stories: [{id, title, status, ac[], files[]}]}`
+- **Trello:** Read board config from `config.json`. Fetch cards from Trello API. Move cards between lists (Backlog → Active Request → Approved). Requires `TRELLO_API_KEY` and `TRELLO_TOKEN` env vars.
+- **Local:** Uses `.mothership/stories.json`: `{project, branch, stories: [{id, title, status, ac[], files[]}]}`
+- **Linear:** Uses Linear API (project stories)
 
 Status: `ready` → `in_progress` → `done` | `blocked`
 
@@ -71,30 +73,37 @@ Status: `ready` → `in_progress` → `done` | `blocked`
 
 ## MODE: build
 
-1. Read checkpoint
-2. Get highest priority "Ready" story from Linear project
-3. If none → `<mothership>BUILD-COMPLETE</mothership>` → stop
-4. Create/checkout branch from checkpoint
-5. Read story acceptance criteria
-6. Find similar code in codebase, follow patterns
-7. Implement (type-check after each file)
-8. Run commands from `.mothership/config.json` (if exists):
+1. Read checkpoint and `.mothership/config.json`
+2. **Determine state backend** from `config.json` → `state` field (`trello`, `linear`, or `local`)
+3. **Get next story from the backend:**
+   - **Trello:** Fetch top card from Backlog list → move to Active Request → read card description as the full spec
+   - **Local:** Read from `.mothership/stories.json` → first story with `status: "ready"`
+   - **Linear:** Get highest priority "Ready" story from Linear project
+4. If no story found → `<mothership>BUILD-COMPLETE</mothership>` → stop
+5. Create/checkout branch: `feat/{story-id}`
+6. Read story acceptance criteria (from card description or stories.json)
+7. Find similar code in codebase, follow patterns
+8. Implement (type-check after each file)
+9. Run commands from `.mothership/config.json` (if exists):
    - `commands.typecheck`
    - `commands.lint`
    - `commands.test`
    Default (no config): `npm run typecheck && npm run lint && npm run test`
-9. If fail → fix → repeat
-10. **WIRING VALIDATION (CRITICAL):**
+10. If fail → fix → repeat
+11. **WIRING VALIDATION (CRITICAL):**
     - UI: Check no empty handlers (`grep -rn "onClick={}" src/`)
     - UI: Verify handlers call real functions (not just console.log)
     - API: Start server, test endpoint responds (not 500/404)
     - Docker: Build image, run container, verify stays running 30s+
     - DB: Run migration, verify schema changes applied
-11. Commit: `[STORY-ID] [title]`
-12. Push branch
-13. Mark story "Done" in Linear
-14. Update checkpoint: `story: null`
-15. Output: `<mothership>BUILT:[STORY-ID]</mothership>`
+12. Commit: `{STORY-ID}: {title}`
+13. Push branch
+14. **Update status in backend:**
+    - **Trello:** Move card to Approved + post completion comment (or add `failed` label on failure)
+    - **Local:** Set story status to `done` in stories.json
+    - **Linear:** Mark story "Done"
+15. Update checkpoint: `story: null`
+16. Output: `<mothership>BUILT:[STORY-ID]</mothership>`
 
 **One story. Then stop.**
 
