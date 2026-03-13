@@ -23,6 +23,30 @@ STATE=$(jq -r '.state // "local"' .mothership/config.json 2>/dev/null || echo "l
 
 ---
 
+### 1b. Board Confirmation (Trello only, first iteration)
+
+On the first loop iteration when state=trello:
+
+- **If `trello.board_id` exists:** Validate via API, then confirm:
+  ```bash
+  BOARD_ID=$(jq -r '.trello.board_id' .mothership/config.json)
+  BOARD_NAME=$(curl -s "https://api.trello.com/1/boards/${BOARD_ID}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name" | jq -r '.name // empty')
+  ```
+  - If `BOARD_NAME` is empty (board deleted/invalid) → fall through to "missing" flow
+  - Otherwise → brief confirmation: "Building from board [BOARD_NAME] — correct?" (only ask once per session)
+- **If missing or invalid:** List boards, let user pick, save to config:
+  ```bash
+  curl -s "https://api.trello.com/1/members/me/boards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name,url" | jq '.[] | {name, id, url}'
+  ```
+  Save selection:
+  ```bash
+  jq --arg id "SELECTED_ID" --arg name "SELECTED_NAME" \
+    '.trello.board_id = $id | .trello.board_name = $name' \
+    .mothership/config.json > tmp && mv tmp .mothership/config.json
+  ```
+
+---
+
 ### 2a. Trello: Get Next Story
 
 **Requires:** `TRELLO_API_KEY` and `TRELLO_TOKEN` environment variables.

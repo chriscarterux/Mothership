@@ -60,13 +60,17 @@ run_check() {
     fi
 }
 
-# Load env if exists (safely handle special characters)
+# Load env if exists (safely - strip quotes and CRLF)
 if [[ -f ".env" ]]; then
     while IFS= read -r line || [[ -n "$line" ]]; do
-        # Skip empty lines and comments
         [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        # Only export lines that look like VAR=value
-        [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] && export "$line"
+        [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*) ]] || continue
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]}"
+        value=${value%$'\r'}
+        value=${value#\"}; value=${value%\"}
+        value=${value#\'}; value=${value%\'}
+        export "$key=$value"
     done < .env
 fi
 

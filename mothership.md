@@ -53,21 +53,24 @@ Status: `ready` → `in_progress` → `done` | `blocked`
 
 ## MODE: plan [feature]
 
-1. Read docs in `./docs/` 
-2. Create Linear project: "[Feature] - v1"
+1. Read docs in `./docs/`
+2. **Board selection** (Trello only): Confirm existing board or list boards via API → user picks → save to config. Never assume.
 3. Create stories (keep small - ONE component/route/function each):
    ```
    Title: User can [verb] [noun]
-   
+
    Acceptance Criteria:
    - [ ] [Specific, testable]
    - [ ] [Specific, testable]
-   
+
    Files: [expected paths]
    ```
 4. Set all stories to "Ready"
-5. Write checkpoint: `phase: build, project: [name], branch: [name]`
-6. Output: `<mothership>PLANNED:[count] stories</mothership>`
+5. **Save stories by backend:**
+   - **Trello:** Create cards on Backlog list with structured description + checklist. Do NOT write stories.json.
+   - **Local:** Write to `.mothership/stories.json`
+6. Write checkpoint: `phase: build, project: [name], branch: [name]`
+7. Output: `<mothership>PLANNED:[count] stories</mothership>`
 
 ---
 
@@ -196,8 +199,10 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
 
 ## MODE: test
 
-1. Read checkpoint
-2. Find "Done" stories without tests (check Linear comments)
+1. Read checkpoint and determine state backend
+2. **Find untested stories by backend:**
+   - **Trello:** Fetch Approved cards without "tested" label
+   - **Local:** Find stories with `status: "done"` and `tested != true`
 3. If none → `<mothership>TEST-COMPLETE</mothership>` → stop
 4. Read the implementation (git diff or files)
 5. Write tests:
@@ -226,8 +231,9 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
    - [ ] Types correct (no `any`)?
    - [ ] Error handling present?
 4. Run full test suite
-5. If issues → create fix tasks in Linear → `<mothership>NEEDS-WORK:[issues]</mothership>`
-6. If clean → `<mothership>APPROVED</mothership>`
+5. **Model Council** (skip if trivial: docs-only, config, <20 lines): 3 parallel reviews (Ollama architecture, Claude deep analysis, Ollama security) → synthesized council verdict
+6. If issues → create fix tasks → `<mothership>NEEDS-WORK:[issues]</mothership>`
+7. If clean → `<mothership>APPROVED</mothership>` (or `<mothership>COUNCIL-APPROVED:[consensus]</mothership>`)
 
 ---
 
@@ -299,6 +305,7 @@ All signals MUST use the `<mothership>SIGNAL</mothership>` format.
 | `UNHEALTHY:[services]` | Integration failures | **Stop** and fix |
 | `INVENTORY-COMPLETE:[counts]` | Codebase inventory done | Stop (one-shot) |
 | `APPROVED` | Review passed | Stop (review is one-shot) |
+| `COUNCIL-APPROVED:[consensus]` | Council review passed | Stop (review is one-shot) |
 | `NEEDS-WORK:[issues]` | Changes needed | Stop (review is one-shot) |
 | `STATUS-COMPLETE` | Status reported | Stop (status is one-shot) |
 | `ONBOARD-COMPLETE` | Codebase.md created | Stop (onboard is one-shot) |
@@ -371,6 +378,13 @@ Every story MUST specify tests for ALL applicable layers:
 - [ ] Container runs 30+ seconds
 - [ ] Health check passes
 - [ ] Logs show startup
+
+## STATUS LINE
+
+Optional. Shows repo, path, model, context%, and Mothership phase in gold in Claude Code.
+Install: `./scripts/install-statusline.sh`
+
+---
 
 ## USAGE
 

@@ -113,6 +113,34 @@ curl -s -X POST "https://api.trello.com/1/checklists/${CHECKLIST_ID}/checkItems"
 | Branding | Branding | Green |
 | Marketing | Marketing | Yellow |
 
+## Board Selection
+
+**Every project has its own Trello board. Agents must confirm the board — never assume.**
+
+### Flow
+
+1. Read `.mothership/config.json` for `trello.board_id`
+2. **If board_id exists:** Confirm with user: "Using board [name] — still correct?"
+3. **If missing:** List boards and let user pick:
+   ```bash
+   curl -s "https://api.trello.com/1/members/me/boards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name,url" | jq '.[] | {name, id, url}'
+   ```
+4. Save selection to config:
+   ```bash
+   jq --arg id "SELECTED_ID" --arg name "SELECTED_NAME" \
+     '.trello.board_id = $id | .trello.board_name = $name' \
+     .mothership/config.json > tmp && mv tmp .mothership/config.json
+   ```
+
+### Rules
+
+- **Never assume a board** — even if only one board exists, confirm with the user
+- **Lock in for the session** — once confirmed, don't re-ask until the next session
+- **Store in config** — so future sessions can confirm rather than re-select
+- Board selection happens in plan (Step 0) and build (Step 1b, first iteration only)
+
+---
+
 ## Reading the Next Story
 
 To get the next ready story for `./m build`:

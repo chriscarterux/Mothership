@@ -17,11 +17,17 @@ echo "║     THIRD-PARTY INTEGRATION CHECK          ║"
 echo "╚════════════════════════════════════════════╝"
 echo ""
 
-# Load env vars (safely handle special characters)
+# Load env vars (safely - strip quotes and CRLF)
 if [[ -f ".env" ]]; then
     while IFS= read -r line || [[ -n "$line" ]]; do
         [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-        [[ "$line" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]] && export "$line"
+        [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*) ]] || continue
+        key="${BASH_REMATCH[1]}"
+        value="${BASH_REMATCH[2]}"
+        value=${value%$'\r'}
+        value=${value#\"}; value=${value%\"}
+        value=${value#\'}; value=${value%\'}
+        export "$key=$value"
     done < .env
 fi
 

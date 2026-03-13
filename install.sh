@@ -121,6 +121,20 @@ echo "Created:"
 echo "  .mothership/         - Configuration"
 echo "  m                    - Loop script"
 echo ""
+
+# Optional statusline install (only when running interactively, not via curl pipe)
+if [[ -t 0 ]]; then
+  read -p "Install Claude Code status line? [y/N]: " SL
+  if [[ "$SL" =~ ^[Yy] ]]; then
+    if [[ -f "scripts/install-statusline.sh" ]]; then
+      bash scripts/install-statusline.sh
+    else
+      echo "Note: Run ./scripts/install-statusline.sh after cloning the repo for status line support."
+    fi
+  fi
+fi
+
+echo ""
 echo "Next steps:"
 echo "  1. Run: ./m doctor"
 echo "  2. Run: ./m benchmark"
