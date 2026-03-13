@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "mothership-state": {
+      "command": "npx",
+      "args": ["tsx", "mcp-servers/mothership-state/index.ts"],
+      "cwd": "/Users/howdycarter/Documents/projects/Mothership",
+      "env": {
+        "TRELLO_API_KEY": "${TRELLO_API_KEY}",
+        "TRELLO_TOKEN": "${TRELLO_TOKEN}",
+        "LINEAR_API_KEY": "${LINEAR_API_KEY}"
+      }
+    }
+  }
+}

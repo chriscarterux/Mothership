@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mothership Diagram Exporter</title>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import React from "https://esm.sh/react@19.0.0";
+      import ReactDOM from "https://esm.sh/react-dom@19.0.0";
+      import * as ExcalidrawLib from "https://esm.sh/@excalidraw/excalidraw@0.18.0/dist/dev/index.js";
+      import { parseMermaidToExcalidraw } from "https://esm.sh/@excalidraw/mermaid-to-excalidraw@2.0.0-rfc3";
+
+      // Keep globals available for debugging in Playwright if needed.
+      window.ExcalidrawLib = ExcalidrawLib;
+      window.React = React;
+      window.ReactDOM = ReactDOM;
+
+      window.renderMermaidToSvg = async (mermaidText) => {
+        const { exportToSvg } = ExcalidrawLib;
+        if (!exportToSvg) {
+          throw new Error("ExcalidrawLib.exportToSvg not available.");
+        }
+        const { elements, files } = await parseMermaidToExcalidraw(mermaidText, {
+          themeVariables: {
+            fontSize: "20px",
+          },
+        });
+        const excalidrawElements = ExcalidrawLib.convertToExcalidrawElements(
+          elements,
+        );
+        const appState = {
+          exportBackground: true,
+          viewBackgroundColor: "#ffffff",
+        };
+        const svg = await exportToSvg({
+          elements: excalidrawElements,
+          appState,
+          files,
+        });
+        return svg.outerHTML;
+      };
+    </script>
+  </body>
+</html>

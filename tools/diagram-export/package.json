@@ -1,0 +1,17 @@
+{
+  "name": "mothership-diagram-export",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "export": "node --experimental-specifier-resolution=node export.mjs",
+    "export:playwright": "node export-playwright.mjs"
+  },
+  "dependencies": {
+    "@excalidraw/excalidraw": "latest",
+    "@excalidraw/mermaid-to-excalidraw": "2.0.0-rfc3",
+    "@excalidraw/utils": "latest",
+    "@resvg/resvg-js": "^2.6.0",
+    "jsdom": "^24.0.0",
+    "playwright": "^1.51.0"
+  }
+}

@@ -1,10 +1,14 @@
 #!/bin/bash
-# Claude Code Status Line - gold yellow, shows repo name, path, model, context usage, and Mothership phase
+# Claude Code Status Line - gold yellow
+# Shows: [repo] path | model | context% | $cost | worktree | mothership: phase -> next
 INPUT=$(cat)
 
 CWD=$(echo "$INPUT" | jq -r '.cwd // empty')
 MODEL=$(echo "$INPUT" | jq -r '.model // empty')
 CONTEXT=$(echo "$INPUT" | jq -r '.context_window.used_percentage // empty' | cut -d. -f1)
+COST=$(echo "$INPUT" | jq -r '.cost.total_cost_usd // empty')
+WORKTREE=$(echo "$INPUT" | jq -r '.worktree.name // empty')
+AGENT=$(echo "$INPUT" | jq -r '.agent.name // empty')
 
 if [ -n "$CWD" ] && [ -d "$CWD" ]; then
   REPO=$(cd "$CWD" && git -c gc.auto=0 rev-parse --show-toplevel 2>/dev/null | xargs basename 2>/dev/null)
@@ -15,7 +19,8 @@ fi
 MOTHERSHIP_PHASE="not configured"
 if [ -n "$GIT_ROOT" ] && [ -f "$GIT_ROOT/.mothership/checkpoint.md" ]; then
   CHECKPOINT="$GIT_ROOT/.mothership/checkpoint.md"
-  CURRENT_PHASE=$(grep -m1 '^## Phase:' "$CHECKPOINT" 2>/dev/null | sed 's/^## Phase:[[:space:]]*//' | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
+  # Support both "## Phase:" and "phase:" formats
+  CURRENT_PHASE=$(grep -m1 -E '^(## )?[Pp]hase:' "$CHECKPOINT" 2>/dev/null | sed 's/^## Phase:[[:space:]]*//;s/^phase:[[:space:]]*//' | tr '[:upper:]' '[:lower:]' | tr -d '[:space:]')
   if [ -n "$CURRENT_PHASE" ]; then
     PHASES="plan build test review deploy done"
     PHASE_LIST=($PHASES)
@@ -58,6 +63,21 @@ if [ -n "$CONTEXT" ]; then
   PARTS="$PARTS | ${CONTEXT}%"
 fi
 
-PARTS="$PARTS | mothership: ${MOTHERSHIP_PHASE}"
+# Session cost
+if [ -n "$COST" ]; then
+  PARTS="$PARTS | \$${COST}"
+fi
+
+# Worktree indicator (for parallel builds)
+if [ -n "$WORKTREE" ]; then
+  PARTS="$PARTS | wt:${WORKTREE}"
+fi
+
+# Mothership status with agent name
+if [ -n "$AGENT" ]; then
+  PARTS="$PARTS | mothership: ${AGENT} ${MOTHERSHIP_PHASE}"
+else
+  PARTS="$PARTS | mothership: ${MOTHERSHIP_PHASE}"
+fi
 
 printf '%b' "${GOLD}${PARTS}${RESET}"

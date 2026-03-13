@@ -1,0 +1,29 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": ".claude/hooks/block-dangerous.sh",
+        "description": "Block rm -rf, force push, and other destructive commands"
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit",
+        "command": ".claude/hooks/post-edit-check.sh",
+        "description": "Typecheck after editing source files"
+      },
+      {
+        "matcher": "Bash",
+        "command": ".claude/hooks/post-commit-verify.sh",
+        "description": "Run lint+test after commits"
+      }
+    ],
+    "Stop": [
+      {
+        "command": ".claude/hooks/on-stop.sh",
+        "description": "Update checkpoint and log progress"
+      }
+    ]
+  }
+}

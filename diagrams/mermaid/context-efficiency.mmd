@@ -1,0 +1,12 @@
+flowchart LR
+  subgraph Mothership
+    M1["mothership.md"] --> M2["checkpoint.md"]
+    M2 --> M3["codebase.md"]
+    M3 --> M4["focused context"]
+  end
+  subgraph Skills
+    S1["many skill prompts"] --> S2["broad context"]
+    S2 --> S3["more tokens"]
+  end
+  M4 --> R1["lower token load"]
+  S3 --> R2["higher token load"]

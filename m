@@ -18,7 +18,25 @@ detect_ai() {
     echo "none"
 }
 
-AI=$(detect_ai)
+AI="${AI_TOOL:-$(detect_ai)}"
+
+# Claude Code native skills detection
+if [[ "$AI" == "claude" ]] && [[ -d ".claude/skills" ]] && [[ "${AI_TOOL:-}" != "legacy" ]]; then
+    echo -e "${B}Mothership v2${N} — Claude Code native skills detected"
+    echo ""
+    echo -e "${G}Use native skills for the best experience:${N}"
+    echo "  /plan [feature]    Create atomic stories"
+    echo "  /build             Build next story"
+    echo "  /test              Test completed stories"
+    echo "  /review            Multi-perspective code review"
+    echo "  /status            Show project status"
+    echo "  /verify [type]     Run verification checks"
+    echo "  /quick-check       Fast sanity check"
+    echo "  /onboard           Generate codebase.md"
+    echo ""
+    echo -e "${Y}Or run legacy mode: AI_TOOL=legacy ./m $MODE${N}"
+    exit 0
+fi
 
 # Quick help
 if [[ "$MODE" == "-h" || "$MODE" == "help" ]]; then

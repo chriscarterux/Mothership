@@ -1,0 +1,8 @@
+flowchart LR
+  Plan["plan: read docs + create stories"] --> Build["build: one story"]
+  Build --> Test["test: one story"]
+  Test --> Review["review: quality gate"]
+  Review -->|approved| Next["build next story"]
+  Review -->|needs work| Fix["back to build"]
+  Build -->|no ready stories| Done["BUILD-COMPLETE"]
+  Test -->|no stories to test| TestDone["TEST-COMPLETE"]
