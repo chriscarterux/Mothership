@@ -41,9 +41,51 @@ Read first: `.mothership/checkpoint.md`, `.mothership/codebase.md`
 
 **Checkpoint:** `phase | project | branch | story`
 
-**Backend** (`.mothership/config.json`): `"state": "linear"` or `"state": "local"`
+**Backend** (`.mothership/config.json`): `"state": "linear"` or `"state": "local"` or `"state": "trello"`
 
 Local uses `.mothership/stories.json`: `{project, branch, stories: [{id, title, status, ac[], files[]}]}`
+
+### Trello Backend
+
+When `"state": "trello"`, read stories from Trello cards via REST API.
+
+**Config** (`.mothership/config.json`):
+```json
+{
+  "state": "trello",
+  "trello": {
+    "board_id": "SHORT_BOARD_ID",
+    "lists": { "ready": "Backlog", "in_progress": "Active Request", "done": "Approved" },
+    "list_ids": { "ready": "LIST_ID", "in_progress": "LIST_ID", "done": "LIST_ID" }
+  }
+}
+```
+
+**Auth:** Uses env vars `TRELLO_API_KEY` and `TRELLO_TOKEN` from `.env.local`.
+
+**Reading stories (get next ready):**
+```bash
+curl -s "https://api.trello.com/1/lists/${LIST_ID_READY}/cards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name,desc,labels" | jq '.[0]'
+```
+Card `name` = story title, `desc` = acceptance criteria (markdown checklist).
+
+**Moving cards (update status):**
+```bash
+curl -s -X PUT "https://api.trello.com/1/cards/${CARD_ID}" \
+  --data-urlencode "key=${TRELLO_API_KEY}" \
+  --data-urlencode "token=${TRELLO_TOKEN}" \
+  --data-urlencode "idList=${TARGET_LIST_ID}"
+```
+
+**Adding comments:**
+```bash
+curl -s -X POST "https://api.trello.com/1/cards/${CARD_ID}/actions/comments" \
+  --data-urlencode "key=${TRELLO_API_KEY}" \
+  --data-urlencode "token=${TRELLO_TOKEN}" \
+  --data-urlencode "text=Implementation complete."
+```
+
+**Mapping:** Trello List → status (`ready`/`in_progress`/`done`), Trello Label → service line, Trello Card → story, Trello Checklist → acceptance criteria.
 
 Status: `ready` → `in_progress` → `done` | `blocked`
 
@@ -51,8 +93,11 @@ Status: `ready` → `in_progress` → `done` | `blocked`
 
 ## MODE: plan [feature]
 
-1. Read docs in `./docs/` 
-2. Create Linear project: "[Feature] - v1"
+1. Read docs in `./docs/`
+2. Create stories in state backend:
+   - **Linear:** Create Linear project "[Feature] - v1", add stories as issues
+   - **Trello:** Create cards in the Backlog list with checklist for acceptance criteria
+   - **Local:** Write to `.mothership/stories.json`
 3. Create stories (keep small - ONE component/route/function each):
    ```
    Title: User can [verb] [noun]
@@ -72,7 +117,10 @@ Status: `ready` → `in_progress` → `done` | `blocked`
 ## MODE: build
 
 1. Read checkpoint
-2. Get highest priority "Ready" story from Linear project
+2. Get highest priority "Ready" story from state backend:
+   - **Linear:** Query Linear project for ready issues
+   - **Trello:** `curl` the Backlog list for the first card (see STATE section)
+   - **Local:** Read `.mothership/stories.json` for first `ready` story
 3. If none → `<mothership>BUILD-COMPLETE</mothership>` → stop
 4. Create/checkout branch from checkpoint
 5. Read story acceptance criteria
@@ -92,7 +140,7 @@ Status: `ready` → `in_progress` → `done` | `blocked`
     - DB: Run migration, verify schema changes applied
 11. Commit: `[STORY-ID] [title]`
 12. Push branch
-13. Mark story "Done" in Linear
+13. Mark story "Done" in state backend (Linear: update issue, Trello: move card to done list, Local: update JSON)
 14. Update checkpoint: `story: null`
 15. Output: `<mothership>BUILT:[STORY-ID]</mothership>`
 
@@ -188,7 +236,7 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
 ## MODE: test
 
 1. Read checkpoint
-2. Find "Done" stories without tests (check Linear comments)
+2. Find "Done" stories without tests (check state backend comments/checklists)
 3. If none → `<mothership>TEST-COMPLETE</mothership>` → stop
 4. Read the implementation (git diff or files)
 5. Write tests:
@@ -198,7 +246,7 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
    - Edge cases
 6. Run tests, fix if needed
 7. Commit: `[STORY-ID] tests`
-8. Add Linear comment: "Tests added: [count]"
+8. Add comment to state backend: "Tests added: [count]" (Linear comment / Trello card comment / local JSON)
 9. Output: `<mothership>TESTED:[STORY-ID]</mothership>`
 
 **One story. Then stop.**
@@ -217,7 +265,7 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
    - [ ] Types correct (no `any`)?
    - [ ] Error handling present?
 4. Run full test suite
-5. If issues → create fix tasks in Linear → `<mothership>NEEDS-WORK:[issues]</mothership>`
+5. If issues → create fix tasks in state backend (Linear issues / Trello cards / local JSON) → `<mothership>NEEDS-WORK:[issues]</mothership>`
 6. If clean → `<mothership>APPROVED</mothership>`
 
 ---
@@ -228,7 +276,7 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
 cat .mothership/checkpoint.md
 ```
 
-Query Linear:
+Query state backend (Linear issues / Trello cards / local JSON):
 - Ready: [count]
 - In Progress: [count]
 - Done: [count]
