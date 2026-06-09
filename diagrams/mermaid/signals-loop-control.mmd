@@ -1,0 +1,7 @@
+flowchart LR
+  Built["BUILT:ID"] --> ContinueBuild["continue build loop"]
+  BuildComplete["BUILD-COMPLETE"] --> StopBuild["stop build loop"]
+  Tested["TESTED:ID"] --> ContinueTest["continue test loop"]
+  TestComplete["TEST-COMPLETE"] --> StopTest["stop test loop"]
+  Approved["APPROVED"] --> StopReview["stop review"]
+  NeedsWork["NEEDS-WORK"] --> FixList["create fixes + stop"]

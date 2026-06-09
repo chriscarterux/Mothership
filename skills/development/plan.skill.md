@@ -11,6 +11,30 @@ Create atomic user stories from a feature description. Every story MUST include 
 
 ## Steps
 
+### 0. Board Selection (Trello only)
+
+When state backend is `trello` (from `.mothership/config.json`):
+
+- **If `trello.board_id` exists in config:** Validate the board still exists via API, then confirm with user:
+  ```bash
+  BOARD_ID=$(jq -r '.trello.board_id' .mothership/config.json)
+  BOARD_NAME=$(curl -s "https://api.trello.com/1/boards/${BOARD_ID}?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name" | jq -r '.name // empty')
+  ```
+  - If `BOARD_NAME` is empty (board deleted/invalid) → fall through to the "missing" flow below
+  - Otherwise → confirm with user: "Using board [BOARD_NAME] — still correct?"
+- **If missing or invalid:** List boards via Trello API and let user pick:
+  ```bash
+  curl -s "https://api.trello.com/1/members/me/boards?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}&fields=name,url" | jq '.[] | {name, id, url}'
+  ```
+  Present the list → user selects → save to `.mothership/config.json`:
+  ```bash
+  jq --arg id "SELECTED_ID" --arg name "SELECTED_NAME" \
+    '.trello.board_id = $id | .trello.board_name = $name' \
+    .mothership/config.json > tmp && mv tmp .mothership/config.json
+  ```
+
+**Never assume a board. Always confirm or ask.**
+
 ### 1. Analyze Feature
 Break down the feature into small, independent pieces:
 - Each story = ONE component, route, or function
@@ -179,6 +203,51 @@ After creating feature stories, ALSO create verification stories:
 ```
 
 ### 6. Save Stories
+
+#### 6a. If state = trello
+
+Create Trello cards on the board's Backlog list. **Do NOT write to stories.json.**
+
+```bash
+# Get Backlog list ID
+BACKLOG_ID=$(curl -s "https://api.trello.com/1/boards/${BOARD_ID}/lists?key=${TRELLO_API_KEY}&token=${TRELLO_TOKEN}" | jq -r '.[] | select(.name=="Backlog") | .id')
+
+# Create card with structured description
+CARD_ID=$(curl -s -X POST "https://api.trello.com/1/cards" \
+  --data-urlencode "key=${TRELLO_API_KEY}" \
+  --data-urlencode "token=${TRELLO_TOKEN}" \
+  --data-urlencode "idList=${BACKLOG_ID}" \
+  --data-urlencode "name=STORY-ID: User can [verb] [noun]" \
+  --data-urlencode "desc=## Overview
+[What this story delivers]
+
+## Acceptance Criteria
+- [ ] [Atomic, testable criterion]
+
+## Technical Context
+- **Files to modify:** [paths]
+- **Patterns to follow:** [reference]
+
+## Testing Requirements
+- [ ] [Specific tests]" | jq -r '.id')
+
+# Add checklist for acceptance criteria
+CHECKLIST_ID=$(curl -s -X POST "https://api.trello.com/1/checklists" \
+  --data-urlencode "key=${TRELLO_API_KEY}" \
+  --data-urlencode "token=${TRELLO_TOKEN}" \
+  --data-urlencode "idCard=${CARD_ID}" \
+  --data-urlencode "name=Acceptance Criteria" | jq -r '.id')
+
+curl -s -X POST "https://api.trello.com/1/checklists/${CHECKLIST_ID}/checkItems" \
+  --data-urlencode "key=${TRELLO_API_KEY}" \
+  --data-urlencode "token=${TRELLO_TOKEN}" \
+  --data-urlencode "name=Criterion text here"
+```
+
+Repeat for each story. Cards are created in priority order (first card = highest priority).
+
+#### 6b. If state = local
+
 ```bash
 jq '.stories += [NEW_STORIES]' .mothership/stories.json > tmp && mv tmp .mothership/stories.json
 ```

@@ -1,4 +1,4 @@
-phase: complete
-project: GitHub Pages Polish & Accessibility
-branch: feat/accessibility-polish
-story: A11Y-010
+phase: test
+project: Council Fixes
+branch: fix/council-review
+story: null

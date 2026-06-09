@@ -19,3 +19,4 @@ Thumbs.db
 # Local tooling
 vendor/excalidraw/
 tools/diagram-export/node_modules/
+mcp-servers/mothership-state/node_modules/

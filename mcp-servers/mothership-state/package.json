@@ -1,0 +1,16 @@
+{
+  "name": "mothership-state",
+  "version": "1.0.0",
+  "description": "Mothership MCP state server — backend-agnostic project state management",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsx index.ts",
+    "dev": "tsx watch index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "tsx": "^4.19.4",
+    "zod": "^4.0.0"
+  }
+}
