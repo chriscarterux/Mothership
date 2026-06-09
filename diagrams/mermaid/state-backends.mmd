@@ -1,0 +1,5 @@
+flowchart LR
+  Config["config.json: state"] -->|local| Local[".mothership/stories.json"]
+  Config -->|linear| Linear["Linear project + stories"]
+  Local --> Checkpoint["checkpoint.md"]
+  Linear --> Checkpoint

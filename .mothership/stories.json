@@ -1,183 +1,163 @@
 {
-  "project": "GitHub Pages Polish & Accessibility",
-  "branch": "feat/accessibility-polish",
+  "project": "Council Fixes",
+  "branch": "fix/council-review",
   "stories": [
     {
-      "id": "A11Y-001",
-      "title": "Fix header layout and logo positioning",
-      "status": "ready",
+      "id": "COUNCIL-001",
+      "title": "Fix install.sh statusline prompt for curl-pipe installs",
+      "type": "fullstack",
+      "status": "done",
       "priority": 1,
-      "ac": [
-        "Logo sized appropriately (48-56px) to fit within 72px nav height",
-        "Nav content vertically centered within header",
-        "Logo and nav links aligned on same baseline",
-        "Header looks professional and balanced on all screen sizes",
-        "Remove logo overflow that causes visual issues"
+      "acceptance_criteria": [
+        {
+          "criterion": "Statusline prompt does not run when install.sh is piped via curl",
+          "verify": "Run: echo 'test' | bash install.sh — should not attempt to invoke install-statusline.sh"
+        },
+        {
+          "criterion": "Statusline prompt works when install.sh is run directly from the repo",
+          "verify": "Run: bash install.sh from repo root — should offer statusline install after main install"
+        },
+        {
+          "criterion": "Detection uses stdin TTY check: [[ -t 0 ]]",
+          "verify": "Read install.sh, confirm the read -p block is wrapped in an if [[ -t 0 ]] guard"
+        }
       ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Current logo is 90px in a 72px nav - causes overflow. Reduce to ~48px and ensure proper vertical centering."
+      "files": ["install.sh"],
+      "verification": {
+        "commands": ["bash -n install.sh"]
+      }
     },
     {
-      "id": "A11Y-002",
-      "title": "Improve text contrast for WCAG AA compliance",
-      "status": "ready",
+      "id": "COUNCIL-002",
+      "title": "Fix raw .env export in check-deploy, check-integrations, verify-all",
+      "type": "fullstack",
+      "status": "done",
       "priority": 2,
-      "ac": [
-        "--text-muted changed from #6b7280 to #9ca3af (4.5:1 contrast ratio)",
-        "All body text meets WCAG AA (4.5:1 for normal, 3:1 for large)",
-        "Section descriptions readable against dark background",
-        "Footer text has sufficient contrast",
-        "Feature card descriptions clearly legible"
+      "acceptance_criteria": [
+        {
+          "criterion": "check-deploy.sh strips quotes and CRLF from .env values",
+          "verify": "Create .env with DATABASE_URL=\"postgres://x\" (quoted), run check-deploy.sh, confirm no parse error"
+        },
+        {
+          "criterion": "check-integrations.sh strips quotes and CRLF from .env values",
+          "verify": "Same test with check-integrations.sh"
+        },
+        {
+          "criterion": "verify-all.sh strips quotes and CRLF from .env values",
+          "verify": "Same test with verify-all.sh"
+        },
+        {
+          "criterion": "All 3 scripts use the same safe .env parsing as check-database.sh",
+          "verify": "Diff the .env parsing blocks — they should match check-database.sh lines 25-33"
+        }
       ],
       "files": [
-        "docs/index.html"
+        "scripts/check-deploy.sh",
+        "scripts/check-integrations.sh",
+        "scripts/verify-all.sh"
       ],
-      "notes": "Current #6b7280 on #04070d is ~4.0:1 - needs bump to ~#9ca3af for 5.5:1"
+      "verification": {
+        "commands": ["bash -n scripts/check-deploy.sh", "bash -n scripts/check-integrations.sh", "bash -n scripts/verify-all.sh"]
+      }
     },
     {
-      "id": "A11Y-003",
-      "title": "Add focus states and keyboard navigation",
-      "status": "ready",
+      "id": "COUNCIL-003",
+      "title": "Add tested label auto-creation in test skill Trello path",
+      "type": "api",
+      "status": "done",
       "priority": 3,
-      "ac": [
-        "All interactive elements have visible focus ring",
-        "Focus ring uses accent color with 2px offset",
-        "Skip-to-content link added for keyboard users",
-        "Demo steps keyboard accessible with Enter/Space activation",
-        "Tab order follows logical reading order",
-        "Focus states respect :focus-visible for mouse users"
+      "acceptance_criteria": [
+        {
+          "criterion": "test.skill.md documents creating the 'tested' label if it does not exist on the board",
+          "verify": "Read test.skill.md Step 5 Trello section, confirm it has a create-if-missing flow"
+        },
+        {
+          "criterion": "Label creation uses POST /1/boards/{id}/labels with name=tested and color=green",
+          "verify": "Read the curl command in test.skill.md"
+        },
+        {
+          "criterion": "Empty TESTED_LABEL triggers creation instead of silently failing",
+          "verify": "Read test.skill.md, confirm there is an if-empty check before the POST to /1/cards/{id}/idLabels"
+        }
       ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Use :focus-visible to show focus only for keyboard, outline-offset: 2px"
+      "files": ["skills/development/test.skill.md"],
+      "verification": {
+        "commands": []
+      }
     },
     {
-      "id": "A11Y-004",
-      "title": "Add ARIA labels and semantic improvements",
-      "status": "ready",
+      "id": "COUNCIL-004",
+      "title": "Add Ollama unavailability fallback in review skill",
+      "type": "fullstack",
+      "status": "done",
       "priority": 4,
-      "ac": [
-        "Main landmark wraps page content",
-        "Nav has aria-label='Main navigation'",
-        "Demo section has role='region' with aria-label",
-        "Interactive demo steps have aria-pressed state",
-        "Terminal code blocks have aria-label describing content",
-        "Decorative SVGs have aria-hidden='true'"
+      "acceptance_criteria": [
+        {
+          "criterion": "review.skill.md documents graceful degradation when Ollama is unavailable",
+          "verify": "Read review.skill.md Step 7, confirm it has a fallback section"
+        },
+        {
+          "criterion": "When Ollama fails, council degrades to Claude-only review (1 reviewer)",
+          "verify": "Read review.skill.md, confirm the fallback says to proceed with Claude analysis only"
+        },
+        {
+          "criterion": "Council verdict notes when running in degraded mode",
+          "verify": "Read review.skill.md, confirm council report format includes a note like '(degraded: Ollama unavailable)'"
+        }
       ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Screen readers need context for custom interactive elements"
+      "files": ["skills/development/review.skill.md"],
+      "verification": {
+        "commands": []
+      }
     },
     {
-      "id": "A11Y-005",
-      "title": "Add premium entrance animations with stagger",
-      "status": "ready",
+      "id": "COUNCIL-005",
+      "title": "Validate board exists via API in plan/build board confirmation",
+      "type": "api",
+      "status": "done",
       "priority": 5,
-      "ac": [
-        "Hero elements animate with spring easing cubic-bezier(0.16, 1, 0.3, 1)",
-        "Stagger delay of 100ms between hero elements",
-        "Elements start from opacity 0, translateY 40px",
-        "Animation duration 0.8s for smooth feel",
-        "Nav fades in after page load with subtle slide",
-        "Animations only play once on load"
+      "acceptance_criteria": [
+        {
+          "criterion": "plan.skill.md Step 0 fetches board name from API to confirm, not from stale config",
+          "verify": "Read plan.skill.md Step 0, confirm it calls GET /1/boards/{id}?fields=name to get the live name"
+        },
+        {
+          "criterion": "build.skill.md Step 1b does the same API validation",
+          "verify": "Read build.skill.md Step 1b, confirm it calls the Trello API to validate the board"
+        },
+        {
+          "criterion": "If board_id is invalid (deleted/moved), skill falls back to board listing",
+          "verify": "Read both skill files, confirm they handle 404/invalid board by re-listing"
+        }
       ],
       "files": [
-        "docs/index.html"
+        "skills/development/plan.skill.md",
+        "skills/development/build.skill.md"
       ],
-      "notes": "Spring easing gives premium Framer-like feel. Current fadeUp is good but can be enhanced."
+      "verification": {
+        "commands": []
+      }
     },
     {
-      "id": "A11Y-006",
-      "title": "Enhance scroll-triggered reveal animations",
-      "status": "ready",
+      "id": "COUNCIL-006",
+      "title": "Fix install-statusline.sh jq dependency message portability",
+      "type": "fullstack",
+      "status": "done",
       "priority": 6,
-      "ac": [
-        "Workflow cards stagger in with 100ms delay each",
-        "Feature cards stagger with 80ms delay",
-        "Demo steps reveal with scale-up effect",
-        "Benchmark section slides in from bottom",
-        "CTA section has subtle scale animation",
-        "Use IntersectionObserver with 15% threshold",
-        "Animations respect prefers-reduced-motion"
+      "acceptance_criteria": [
+        {
+          "criterion": "Error message provides install instructions for multiple platforms",
+          "verify": "Read install-statusline.sh, confirm it says 'brew install jq' on macOS, 'apt install jq' on Linux"
+        },
+        {
+          "criterion": "Platform detection uses uname to choose the right instruction",
+          "verify": "Read install-statusline.sh, confirm it checks $(uname) for Darwin vs Linux"
+        }
       ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Current reveal exists but can be more premium with varied effects per section"
-    },
-    {
-      "id": "A11Y-007",
-      "title": "Add micro-interactions on hover states",
-      "status": "ready",
-      "priority": 7,
-      "ac": [
-        "Nav links have underline slide-in from left on hover",
-        "Buttons have subtle glow pulse on hover",
-        "Workflow cards have 3D tilt effect on hover (subtle)",
-        "Feature icons scale and glow on card hover",
-        "Demo steps have border gradient animation on hover",
-        "All transitions use 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-      ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Keep micro-interactions subtle and professional - don't overdo it"
-    },
-    {
-      "id": "A11Y-008",
-      "title": "Add smooth scroll with active nav highlighting",
-      "status": "ready",
-      "priority": 8,
-      "ac": [
-        "Smooth scroll to sections with 80px offset for fixed header",
-        "Active nav link highlights based on scroll position",
-        "Active state uses accent color underline",
-        "IntersectionObserver tracks which section is in view",
-        "Scroll spy updates on both scroll and resize"
-      ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "scroll-behavior: smooth already exists, add active state tracking"
-    },
-    {
-      "id": "A11Y-009",
-      "title": "Add loading state and page transition polish",
-      "status": "ready",
-      "priority": 9,
-      "ac": [
-        "Page has subtle fade-in on load to prevent FOUC",
-        "Body starts with opacity 0, animates to 1",
-        "Starfield canvas fades in after 200ms",
-        "Navigation slides down from top on load",
-        "All content waits for fonts to load before animating"
-      ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Prevents flash of unstyled content and creates premium first impression"
-    },
-    {
-      "id": "A11Y-010",
-      "title": "Final accessibility audit and reduced motion support",
-      "status": "ready",
-      "priority": 10,
-      "ac": [
-        "All animations disabled when prefers-reduced-motion is set",
-        "Static starfield for reduced motion users",
-        "Alternative focus indicators work without animation",
-        "Page fully functional without JavaScript",
-        "Test with screen reader - all content accessible",
-        "Lighthouse accessibility score 95+"
-      ],
-      "files": [
-        "docs/index.html"
-      ],
-      "notes": "Final polish pass ensuring site works for all users"
+      "files": ["scripts/install-statusline.sh"],
+      "verification": {
+        "commands": ["bash -n scripts/install-statusline.sh"]
+      }
     }
   ]
 }

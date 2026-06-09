@@ -41,9 +41,11 @@ Read first: `.mothership/checkpoint.md`, `.mothership/codebase.md`
 
 **Checkpoint:** `phase | project | branch | story`
 
-**Backend** (`.mothership/config.json`): `"state": "linear"` or `"state": "local"` or `"state": "trello"`
+**Backend** (`.mothership/config.json`): `"state": "trello"` or `"state": "linear"` or `"state": "local"`
 
-Local uses `.mothership/stories.json`: `{project, branch, stories: [{id, title, status, ac[], files[]}]}`
+- **Trello:** Read board config from `config.json`. Fetch cards from Trello API. Move cards between lists (Backlog → Active Request → Approved). Requires `TRELLO_API_KEY` and `TRELLO_TOKEN` env vars.
+- **Local:** Uses `.mothership/stories.json`: `{project, branch, stories: [{id, title, status, ac[], files[]}]}`
+- **Linear:** Uses Linear API (project stories)
 
 ### Trello Backend
 
@@ -94,55 +96,63 @@ Status: `ready` → `in_progress` → `done` | `blocked`
 ## MODE: plan [feature]
 
 1. Read docs in `./docs/`
-2. Create stories in state backend:
+2. **Board selection** (Trello only): Confirm existing board or list boards via API → user picks → save to config. Never assume.
+3. Create stories in state backend:
    - **Linear:** Create Linear project "[Feature] - v1", add stories as issues
    - **Trello:** Create cards in the Backlog list with checklist for acceptance criteria
    - **Local:** Write to `.mothership/stories.json`
-3. Create stories (keep small - ONE component/route/function each):
+4. Create stories (keep small - ONE component/route/function each):
    ```
    Title: User can [verb] [noun]
-   
+
    Acceptance Criteria:
    - [ ] [Specific, testable]
    - [ ] [Specific, testable]
-   
+
    Files: [expected paths]
    ```
-4. Set all stories to "Ready"
-5. Write checkpoint: `phase: build, project: [name], branch: [name]`
-6. Output: `<mothership>PLANNED:[count] stories</mothership>`
+5. Set all stories to "Ready"
+6. **Save stories by backend:**
+   - **Trello:** Create cards on Backlog list with structured description + checklist. Do NOT write stories.json.
+   - **Local:** Write to `.mothership/stories.json`
+7. Write checkpoint: `phase: build, project: [name], branch: [name]`
+8. Output: `<mothership>PLANNED:[count] stories</mothership>`
 
 ---
 
 ## MODE: build
 
-1. Read checkpoint
-2. Get highest priority "Ready" story from state backend:
-   - **Linear:** Query Linear project for ready issues
-   - **Trello:** `curl` the Backlog list for the first card (see STATE section)
-   - **Local:** Read `.mothership/stories.json` for first `ready` story
-3. If none → `<mothership>BUILD-COMPLETE</mothership>` → stop
-4. Create/checkout branch from checkpoint
-5. Read story acceptance criteria
-6. Find similar code in codebase, follow patterns
-7. Implement (type-check after each file)
-8. Run commands from `.mothership/config.json` (if exists):
+1. Read checkpoint and `.mothership/config.json`
+2. **Determine state backend** from `config.json` → `state` field (`trello`, `linear`, or `local`)
+3. **Get next story from the backend:**
+   - **Trello:** Fetch top card from Backlog list → move to Active Request → read card description as the full spec
+   - **Local:** Read from `.mothership/stories.json` → first story with `status: "ready"`
+   - **Linear:** Get highest priority "Ready" story from Linear project
+4. If no story found → `<mothership>BUILD-COMPLETE</mothership>` → stop
+5. Create/checkout branch: `feat/{story-id}`
+6. Read story acceptance criteria (from card description or stories.json)
+7. Find similar code in codebase, follow patterns
+8. Implement (type-check after each file)
+9. Run commands from `.mothership/config.json` (if exists):
    - `commands.typecheck`
    - `commands.lint`
    - `commands.test`
    Default (no config): `npm run typecheck && npm run lint && npm run test`
-9. If fail → fix → repeat
-10. **WIRING VALIDATION (CRITICAL):**
+10. If fail → fix → repeat
+11. **WIRING VALIDATION (CRITICAL):**
     - UI: Check no empty handlers (`grep -rn "onClick={}" src/`)
     - UI: Verify handlers call real functions (not just console.log)
     - API: Start server, test endpoint responds (not 500/404)
     - Docker: Build image, run container, verify stays running 30s+
     - DB: Run migration, verify schema changes applied
-11. Commit: `[STORY-ID] [title]`
-12. Push branch
-13. Mark story "Done" in state backend (Linear: update issue, Trello: move card to done list, Local: update JSON)
-14. Update checkpoint: `story: null`
-15. Output: `<mothership>BUILT:[STORY-ID]</mothership>`
+12. Commit: `{STORY-ID}: {title}`
+13. Push branch
+14. **Update status in backend:**
+    - **Trello:** Move card to Approved + post completion comment (or add `failed` label on failure)
+    - **Local:** Set story status to `done` in stories.json
+    - **Linear:** Mark story "Done"
+15. Update checkpoint: `story: null`
+16. Output: `<mothership>BUILT:[STORY-ID]</mothership>`
 
 **One story. Then stop.**
 
@@ -235,8 +245,11 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
 
 ## MODE: test
 
-1. Read checkpoint
-2. Find "Done" stories without tests (check state backend comments/checklists)
+1. Read checkpoint and determine state backend
+2. **Find untested stories by backend:**
+   - **Trello:** Fetch Approved cards without "tested" label
+   - **Local:** Find stories with `status: "done"` and `tested != true`
+   - **Linear:** Find completed issues without test evidence
 3. If none → `<mothership>TEST-COMPLETE</mothership>` → stop
 4. Read the implementation (git diff or files)
 5. Write tests:
@@ -265,8 +278,9 @@ Output: `<mothership>MATRIX-PASS:[story-id]</mothership>` or `<mothership>MATRIX
    - [ ] Types correct (no `any`)?
    - [ ] Error handling present?
 4. Run full test suite
-5. If issues → create fix tasks in state backend (Linear issues / Trello cards / local JSON) → `<mothership>NEEDS-WORK:[issues]</mothership>`
-6. If clean → `<mothership>APPROVED</mothership>`
+5. **Model Council** (skip if trivial: docs-only, config, <20 lines): 3 parallel reviews (Ollama architecture, Claude deep analysis, Ollama security) → synthesized council verdict
+6. If issues → create fix tasks in state backend (Linear issues / Trello cards / local JSON) → `<mothership>NEEDS-WORK:[issues]</mothership>`
+7. If clean → `<mothership>APPROVED</mothership>` (or `<mothership>COUNCIL-APPROVED:[consensus]</mothership>`)
 
 ---
 
@@ -338,6 +352,7 @@ All signals MUST use the `<mothership>SIGNAL</mothership>` format.
 | `UNHEALTHY:[services]` | Integration failures | **Stop** and fix |
 | `INVENTORY-COMPLETE:[counts]` | Codebase inventory done | Stop (one-shot) |
 | `APPROVED` | Review passed | Stop (review is one-shot) |
+| `COUNCIL-APPROVED:[consensus]` | Council review passed | Stop (review is one-shot) |
 | `NEEDS-WORK:[issues]` | Changes needed | Stop (review is one-shot) |
 | `STATUS-COMPLETE` | Status reported | Stop (status is one-shot) |
 | `ONBOARD-COMPLETE` | Codebase.md created | Stop (onboard is one-shot) |
@@ -410,6 +425,13 @@ Every story MUST specify tests for ALL applicable layers:
 - [ ] Container runs 30+ seconds
 - [ ] Health check passes
 - [ ] Logs show startup
+
+## STATUS LINE
+
+Optional. Shows repo, path, model, context%, and Mothership phase in gold in Claude Code.
+Install: `./scripts/install-statusline.sh`
+
+---
 
 ## USAGE
 

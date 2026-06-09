@@ -1,0 +1,6 @@
+flowchart LR
+  Iter1["Iteration 1"] --> Reset1["Stop + save checkpoint"]
+  Reset1 --> Iter2["Iteration 2"]
+  Iter2 --> Reset2["Stop + save checkpoint"]
+  Reset2 --> Iter3["Iteration 3"]
+  Iter3 --> Outcome["Consistent context + less drift"]
